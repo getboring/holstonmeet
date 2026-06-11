@@ -12,7 +12,7 @@ import { nanoid } from 'nanoid'
 
 export const Root = style(
 	Toast.Root,
-	'bg-white rounded dark:bg-zinc-500 shadow p-3 text-zinc-800 dark:text-zinc-50'
+	'bg-white rounded-xl dark:bg-zinc-800 shadow-lg shadow-black/5 dark:shadow-black/20 ring-1 ring-zinc-200/50 dark:ring-zinc-700/50 p-4 text-zinc-800 dark:text-zinc-100'
 )
 
 interface Notification {
@@ -74,7 +74,7 @@ export default {
 	...Toast,
 	Viewport: style(
 		Toast.Viewport,
-		'absolute bottom-0 right-0 flex flex-col items-end p-7 gap-4 max-w-100vw m-0 outline-none'
+		'absolute bottom-0 right-0 flex flex-col items-end p-6 gap-3 max-w-100vw m-0 outline-none'
 	),
 	Root,
 	Action: style(Toast.Action, 'ml-auto'),

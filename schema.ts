@@ -36,6 +36,43 @@ export const Meetings = sqliteTable('Meetings', {
 	ended: text('ended'),
 })
 
+export const Users = sqliteTable('Users', {
+	...metadataColumns,
+	email: text('email').notNull().unique(),
+	name: text('name').notNull(),
+	passwordHash: text('passwordHash').notNull(),
+	role: text('role', { enum: ['owner', 'admin', 'member'] })
+		.notNull()
+		.default('member'),
+	orgId: integer('orgId').references(() => Organizations.id),
+})
+
+export const Organizations = sqliteTable('Organizations', {
+	...metadataColumns,
+	name: text('name').notNull(),
+	slug: text('slug').notNull().unique(),
+	plan: text('plan', { enum: ['free', 'pro', 'enterprise'] })
+		.notNull()
+		.default('free'),
+	maxRooms: integer('maxRooms').notNull().default(5),
+	maxParticipantsPerRoom: integer('maxParticipantsPerRoom')
+		.notNull()
+		.default(10),
+})
+
+export const Rooms = sqliteTable('Rooms', {
+	...metadataColumns,
+	name: text('name').notNull(),
+	slug: text('slug').notNull(),
+	orgId: integer('orgId')
+		.references(() => Organizations.id)
+		.notNull(),
+	createdBy: integer('createdBy')
+		.references(() => Users.id)
+		.notNull(),
+	isActive: integer('isActive', { mode: 'boolean' }).notNull().default(true),
+})
+
 export function getDb(context: { env: Env }) {
 	if (!context.env.DB) {
 		return null

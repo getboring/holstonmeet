@@ -39,10 +39,12 @@ export function EnsurePermissions(props: EnsurePermissionsProps) {
 
 	if (permissionState === 'denied') {
 		return (
-			<div className="grid items-center h-full">
-				<div className="mx-auto space-y-2 max-w-80">
-					<h1 className="text-2xl font-bold">Permission denied</h1>
-					<p>
+			<div className="grid items-center h-full bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+				<div className="mx-auto space-y-3 max-w-80 text-center">
+					<h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
+						Permission denied
+					</h1>
+					<p className="text-sm text-zinc-500">
 						You will need to go into your browser settings and manually
 						re-enable permission.
 					</p>
@@ -53,12 +55,17 @@ export function EnsurePermissions(props: EnsurePermissionsProps) {
 
 	if (permissionState === 'prompt') {
 		return (
-			<div className="grid items-center h-full">
-				<div className="mx-auto max-w-80">
-					<p className="mb-8">
-						In order to use Orange Meets, you will need to grant permission to
-						your camera and microphone. You will be prompted for access.
-					</p>
+			<div className="grid items-center h-full bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+				<div className="mx-auto max-w-80 text-center space-y-6">
+					<div className="space-y-2">
+						<h2 className="text-xl font-semibold text-zinc-900 dark:text-white">
+							Camera & Mic Access
+						</h2>
+						<p className="text-sm text-zinc-500">
+							In order to use HolstonMeet, you will need to grant permission to
+							your camera and microphone. You will be prompted for access.
+						</p>
+					</div>
 					<Button
 						onClick={() => {
 							navigator.mediaDevices

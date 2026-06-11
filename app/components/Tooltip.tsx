@@ -17,13 +17,16 @@ export const Tooltip: FC<TooltipProps> = ({
 	if (content === undefined) return <>{children}</>
 
 	return (
-		<RadixTooltip.Provider>
+		<RadixTooltip.Provider delayDuration={300}>
 			<RadixTooltip.Root open={open} onOpenChange={onOpenChange}>
 				<RadixTooltip.Trigger asChild>{children}</RadixTooltip.Trigger>
 				<RadixTooltip.Portal>
-					<RadixTooltip.Content className="bg-zinc-100 dark:bg-zinc-600 text-sm px-2 py-1 drop-shadow-md dark:drop-shadow-none rounded">
+					<RadixTooltip.Content
+						className="bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-xs font-medium px-2.5 py-1.5 rounded-lg shadow-lg"
+						sideOffset={6}
+					>
 						{content}
-						<RadixTooltip.Arrow className="fill-zinc-100 dark:fill-zinc-600 drop-shadow dark:drop-shadow-none rounded" />
+						<RadixTooltip.Arrow className="fill-zinc-900 dark:fill-zinc-100" />
 					</RadixTooltip.Content>
 				</RadixTooltip.Portal>
 			</RadixTooltip.Root>

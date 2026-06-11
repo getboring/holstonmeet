@@ -63,18 +63,20 @@ export default function Lobby() {
 	const [params] = useSearchParams()
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full p-4">
+		<div className="flex flex-col items-center justify-center h-full p-4 bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			<div className="flex-1"></div>
-			<div className="space-y-4 w-96">
-				<div>
-					<h1 className="text-3xl font-bold">{roomName}</h1>
-					<p className="text-sm text-zinc-500 dark:text-zinc-400">
+			<div className="space-y-6 w-full max-w-md">
+				<div className="text-center">
+					<h1 className="text-3xl font-bold text-zinc-900 dark:text-white">
+						{roomName}
+					</h1>
+					<p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
 						{`${joinedUsers} ${
 							joinedUsers === 1 ? 'user' : 'users'
 						} in the room.`}{' '}
 					</p>
 				</div>
-				<div className="relative">
+				<div className="relative rounded-2xl overflow-hidden shadow-2xl shadow-indigo-500/10 ring-1 ring-zinc-200/50 dark:ring-zinc-700/50">
 					<SelfView
 						className="aspect-[4/3] w-full"
 						videoTrack={videoStreamTrack}
@@ -102,13 +104,13 @@ export default function Lobby() {
 					</div>
 				</div>
 				{sessionError && (
-					<div className="p-3 rounded-md text-sm text-zinc-800 bg-red-200 dark:text-zinc-200 dark:bg-red-700">
+					<div className="p-3 rounded-lg text-sm bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-800">
 						{sessionError}
 					</div>
 				)}
 				{(userMedia.audioUnavailableReason ||
 					userMedia.videoUnavailableReason) && (
-					<div className="p-3 rounded-md text-sm text-zinc-800 bg-zinc-200 dark:text-zinc-200 dark:bg-zinc-700">
+					<div className="p-3 rounded-lg text-sm bg-zinc-50 text-zinc-600 ring-1 ring-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-700">
 						{userMedia.audioUnavailableReason === 'NotAllowedError' &&
 							userMedia.videoUnavailableReason === undefined && (
 								<p>Mic permission was denied.</p>
@@ -145,20 +147,18 @@ export default function Lobby() {
 						)}
 					</div>
 				)}
-				<div className="flex gap-4 text-sm">
+				<div className="flex gap-3 justify-center">
 					<Button
 						onClick={() => {
 							setJoined(true)
-							// we navigate here with javascript instead of an a
-							// tag because we don't want it to be possible to join
-							// the room without the JS having loaded
 							navigate(
 								'room' + (params.size > 0 ? '?' + params.toString() : '')
 							)
 						}}
 						disabled={!session?.sessionId}
+						className="px-8"
 					>
-						Join
+						Join Now
 					</Button>
 					<MicButton />
 					<CameraButton />

@@ -2,6 +2,9 @@
 module.exports = {
 	content: ['./app/**/*.{js,jsx,ts,tsx}'],
 	theme: {
+		fontFamily: {
+			sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+		},
 		extend: {
 			keyframes: {
 				fadeIn: {

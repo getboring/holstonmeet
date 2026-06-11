@@ -5,7 +5,7 @@ import { cn, style } from '~/utils/style'
 
 export const DialogOverlay = style(
 	RadixDialog.DialogOverlay,
-	'fixed inset-0 bg-black opacity-40'
+	'fixed inset-0 bg-black/40 backdrop-blur-sm'
 )
 
 export const DialogContent = forwardRef<
@@ -16,7 +16,7 @@ export const DialogContent = forwardRef<
 		ref={ref}
 		className={cn(
 			'fixed',
-			'rounded-lg',
+			'rounded-2xl',
 			'top-1/2',
 			'left-1/2',
 			'-translate-x-1/2',
@@ -26,9 +26,9 @@ export const DialogContent = forwardRef<
 			'max-h-[85vh]',
 			'overflow-y-auto',
 			'p-6',
-			'bg-inherit',
-			'shadow-xl',
-			'dark:shadow-none'
+			'bg-white dark:bg-zinc-900',
+			'shadow-2xl shadow-black/10 dark:shadow-black/40',
+			'ring-1 ring-zinc-200/50 dark:ring-zinc-700/50'
 		)}
 	>
 		{props.children}
@@ -40,17 +40,14 @@ DialogContent.displayName = 'DialogContent'
 
 export const DialogTitle = style(
 	RadixDialog.Title,
-	'text-zinc-800 dark:text-zinc-100 font-bold text-xl'
+	'text-zinc-900 dark:text-white font-semibold text-xl'
 )
 
 const DialogClose = () => (
-	<RadixDialog.Close className="absolute top-0 right-0 m-4 hover:bg-zinc-100 dark:hover:bg-zinc-700 rounded-full h-8 w-8">
+	<RadixDialog.Close className="absolute top-3 right-3 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-full h-8 w-8 flex items-center justify-center transition-colors">
 		<VisuallyHidden>Close</VisuallyHidden>
-		<span
-			className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-			aria-hidden
-		>
-			×
+		<span className="text-zinc-400 dark:text-zinc-500 text-lg" aria-hidden>
+			x
 		</span>
 	</RadixDialog.Close>
 )

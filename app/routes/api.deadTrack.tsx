@@ -63,7 +63,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const chatCard: ChatCard = {
 		cardsV2: [
 			{
-				cardId: 'orange-meets-dead-track-card',
+				cardId: 'holstonmeet-dead-track-card',
 				card: {
 					header: {
 						title: `💀 Dead track: ${pullingUser} had issue pulling from ${pushingUser}`,

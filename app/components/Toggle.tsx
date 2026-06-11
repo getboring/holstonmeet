@@ -7,10 +7,13 @@ export const Toggle: FC<RadixSwitch.SwitchProps> = ({ className, ...rest }) => (
 		className={cn(
 			'w-11',
 			'h-6',
-			'bg-zinc-600',
+			'bg-zinc-200 dark:bg-zinc-700',
 			'rounded-full',
 			'relative',
-			'data-[state=checked]:bg-orange-400',
+			'shadow-inner',
+			'data-[state=checked]:bg-indigo-600',
+			'transition-colors duration-200',
+			'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900',
 			className
 		)}
 		{...rest}
@@ -22,8 +25,8 @@ export const Toggle: FC<RadixSwitch.SwitchProps> = ({ className, ...rest }) => (
 				'h-5',
 				'bg-white',
 				'rounded-full',
-				'shadow-zinc-900/70',
-				'transition-transform',
+				'shadow-sm',
+				'transition-transform duration-200',
 				'translate-x-[2px]',
 				'data-[state=checked]:translate-x-[22px]'
 			)}

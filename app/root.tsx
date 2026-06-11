@@ -33,6 +33,22 @@ function addOneDay(date: Date): Date {
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 	const url = new URL(request.url)
+
+	// Skip auth check for login, register, and static assets
+	const publicPaths = ['/login', '/register', '/set-username']
+	const isPublicPath = publicPaths.some((p) => url.pathname.startsWith(p))
+	const isApiPath = url.pathname.startsWith('/api/')
+	const isDashboardPath = url.pathname.startsWith('/dashboard')
+
+	if (isPublicPath || isApiPath) {
+		return json({ userDirectoryUrl: context.env.USER_DIRECTORY_URL })
+	}
+
+	// Dashboard routes handle their own auth
+	if (isDashboardPath) {
+		return json({ userDirectoryUrl: context.env.USER_DIRECTORY_URL })
+	}
+
 	const username = await getUsername(request)
 	if (!username && url.pathname !== '/set-username') {
 		const redirectUrl = new URL(url)
@@ -76,28 +92,46 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 
 export const meta: MetaFunction = () => [
 	{
-		title: 'Orange Meets',
+		title: 'HolstonMeet',
+	},
+	{
+		name: 'description',
+		content:
+			'Secure, real-time video meetings powered by Cloudflare. E2E encrypted, low-latency, global edge network.',
 	},
 ]
 
 export const links: LinksFunction = () => [
 	{ rel: 'stylesheet', href: tailwind },
 	{
+		rel: 'preconnect',
+		href: 'https://fonts.googleapis.com',
+	},
+	{
+		rel: 'preconnect',
+		href: 'https://fonts.gstatic.com',
+		crossOrigin: 'anonymous',
+	},
+	{
+		rel: 'stylesheet',
+		href: 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap',
+	},
+	{
 		rel: 'apple-touch-icon',
 		sizes: '180x180',
-		href: '/apple-touch-icon.png?v=orange-emoji',
+		href: '/apple-touch-icon.png?v=holstonmeet',
 	},
 	{
 		rel: 'icon',
 		type: 'image/png',
 		sizes: '32x32',
-		href: '/favicon-32x32.png?v=orange-emoji',
+		href: '/favicon-32x32.png?v=holstonmeet',
 	},
 	{
 		rel: 'icon',
 		type: 'image/png',
 		sizes: '16x16',
-		href: '/favicon-16x16.png?v=orange-emoji',
+		href: '/favicon-16x16.png?v=holstonmeet',
 	},
 	{
 		rel: 'manifest',
@@ -106,12 +140,12 @@ export const links: LinksFunction = () => [
 	},
 	{
 		rel: 'mask-icon',
-		href: '/safari-pinned-tab.svg?v=orange-emoji',
-		color: '#faa339',
+		href: '/safari-pinned-tab.svg?v=holstonmeet',
+		color: '#4f46e5',
 	},
 	{
 		rel: 'shortcut icon',
-		href: '/favicon.ico?v=orange',
+		href: '/favicon.ico?v=holstonmeet',
 	},
 ]
 
@@ -128,8 +162,8 @@ const Document: FC<{ children?: ReactNode }> = ({ children }) => {
 			<head>
 				<meta charSet="utf-8" />
 				<meta name="viewport" content="width=device-width, initial-scale=1" />
-				<meta name="apple-mobile-web-app-title" content="Orange Meets" />
-				<meta name="application-name" content="Orange Meets" />
+				<meta name="apple-mobile-web-app-title" content="HolstonMeet" />
+				<meta name="application-name" content="HolstonMeet" />
 				<meta name="msapplication-TileColor" content="#ffffff" />
 				<meta
 					name="theme-color"
@@ -164,11 +198,10 @@ const Document: FC<{ children?: ReactNode }> = ({ children }) => {
 				{children}
 				<ScrollRestoration />
 				<div className="hidden" suppressHydrationWarning>
-					{/* Replaced in entry.server.ts */}
 					__CLIENT_ENV__
 				</div>
 				<Scripts />
-				<LiveReload />
+				{process.env.NODE_ENV === 'development' && <LiveReload />}
 			</body>
 		</html>
 	)
@@ -177,11 +210,15 @@ const Document: FC<{ children?: ReactNode }> = ({ children }) => {
 export const ErrorBoundary = () => {
 	return (
 		<Document>
-			<div className="grid h-full place-items-center">
-				<p>
-					It looks like there was an error, but don't worry it has been
-					reported. Sorry about that!
-				</p>
+			<div className="grid h-full place-items-center bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+				<div className="text-center space-y-3">
+					<p className="text-xl font-semibold text-zinc-900 dark:text-white">
+						Something went wrong
+					</p>
+					<p className="text-sm text-zinc-500">
+						Don't worry, it has been reported.
+					</p>
+				</div>
 			</div>
 		</Document>
 	)

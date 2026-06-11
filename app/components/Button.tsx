@@ -6,23 +6,23 @@ import { cn } from '~/utils/style'
 const displayTypeMap = {
 	primary: [
 		'text-white',
-		'bg-orange-500 hover:bg-orange-600 active:bg-orange-700 active:bg-orange-800',
-		'border-orange-500 hover:border-orange-600 active:border-orange-700 active:border-orange-800',
+		'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800',
+		'shadow-sm hover:shadow-md',
 	],
 	secondary: [
-		'text-zinc-900 dark:text-zinc-100',
-		'bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 active:bg-zinc-400 dark:active:bg-zinc-700',
-		'border-zinc-200 hover:border-zinc-300 dark:border-zinc-700 dark:hover:border-zinc-600',
+		'text-zinc-700 dark:text-zinc-200',
+		'bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700',
+		'border border-zinc-200 dark:border-zinc-700',
+		'shadow-sm',
 	],
 	ghost: [
-		'text-white hover:text-zinc-900',
-		'bg-transparent hover:bg-white',
-		'border-transparent hover:border-white',
+		'text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white',
+		'bg-transparent hover:bg-zinc-100 dark:hover:bg-zinc-800',
 	],
 	danger: [
 		'text-white',
 		'bg-red-600 hover:bg-red-700 active:bg-red-800',
-		'border-red-600 hover:border-red-700 active:border-red-800',
+		'shadow-sm',
 	],
 }
 
@@ -34,13 +34,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 	({ className, displayType = 'primary', disabled, onClick, ...rest }, ref) => (
 		<button
 			className={cn(
-				'border-4',
-				'rounded',
-				'uppercase',
-				'font-bold',
-				'tracking-widest',
-				'py-[.5em] px-[1em]',
-				disabled && 'cursor-not-allowed opacity-60',
+				'rounded-lg',
+				'font-medium',
+				'text-sm',
+				'py-2 px-4',
+				'transition-all duration-150',
+				'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900',
+				disabled && 'cursor-not-allowed opacity-50',
 				displayTypeMap[displayType].join(' '),
 				className
 			)}
@@ -63,13 +63,13 @@ export const ButtonLink = forwardRef<
 	// eslint-disable-next-line jsx-a11y/anchor-has-content
 	<Link
 		className={cn(
-			'inline-block',
-			'border-4',
-			'rounded',
-			'uppercase',
-			'font-bold',
-			'tracking-widest',
-			'py-[.5em] px-[1em]',
+			'inline-flex items-center justify-center',
+			'rounded-lg',
+			'font-medium',
+			'text-sm',
+			'py-2 px-4',
+			'transition-all duration-150',
+			'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 dark:focus-visible:ring-offset-zinc-900',
 			displayTypeMap[displayType].join(' '),
 			className
 		)}
@@ -78,4 +78,4 @@ export const ButtonLink = forwardRef<
 	/>
 ))
 
-ButtonLink.displayName = 'Button'
+ButtonLink.displayName = 'ButtonLink'

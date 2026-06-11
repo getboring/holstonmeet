@@ -1,0 +1,100 @@
+import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare'
+import { json, redirect } from '@remix-run/cloudflare'
+import { Form, useActionData, useLoaderData } from '@remix-run/react'
+import { count, eq } from 'drizzle-orm'
+import { Rooms, getDb } from 'schema'
+import { requireUser, getOrg } from '~/utils/auth.server'
+import { Button } from '~/components/Button'
+import { Input } from '~/components/Input'
+import { Label } from '~/components/Label'
+
+export const loader = async ({ request, context }: LoaderFunctionArgs) => {
+	await requireUser(request, context.env)
+	const org = await getOrg(request, context.env)
+	return json({ org })
+}
+
+export const action = async ({ request, context }: ActionFunctionArgs) => {
+	const user = await requireUser(request, context.env)
+	const org = await getOrg(request, context.env)
+	const db = getDb(context)
+
+	if (!db || !org) {
+		return json({ error: 'Database or organization unavailable' }, { status: 500 })
+	}
+
+	// Check room limit
+	const [roomCountResult] = await db
+		.select({ count: count() })
+		.from(Rooms)
+		.where(eq(Rooms.orgId, org.id))
+
+	if ((roomCountResult?.count ?? 0) >= org.maxRooms) {
+		return json(
+			{ error: `Room limit reached (${org.maxRooms}). Upgrade your plan for more.` },
+			{ status: 403 }
+		)
+	}
+
+	const formData = await request.formData()
+	const name = formData.get('name')
+
+	if (typeof name !== 'string' || name.trim().length === 0) {
+		return json({ error: 'Room name is required' }, { status: 400 })
+	}
+
+	const slug = name
+		.toLowerCase()
+		.replace(/[^a-z0-9]+/g, '-')
+		.replace(/^-|-$/g, '')
+
+	await db.insert(Rooms).values({
+		name: name.trim(),
+		slug,
+		orgId: org.id,
+		createdBy: user.id,
+	})
+
+	return redirect('/dashboard/rooms')
+}
+
+export default function NewRoom() {
+	const { org } = useLoaderData<typeof loader>()
+	const actionData = useActionData<typeof action>()
+
+	return (
+		<div className="max-w-md mx-auto space-y-6">
+			<div>
+				<h1 className="text-2xl font-bold">Create Room</h1>
+				<p className="text-zinc-500 text-sm mt-1">
+					A room is a persistent meeting space for your team.
+				</p>
+			</div>
+
+			{actionData?.error && (
+				<div className="p-3 rounded-lg text-sm bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-800">
+					{actionData.error}
+				</div>
+			)}
+
+			<Form method="post" className="space-y-4">
+				<div className="space-y-2">
+					<Label htmlFor="name">Room Name</Label>
+					<Input
+						id="name"
+						name="name"
+						required
+						autoFocus
+						placeholder="e.g. Team Standup"
+					/>
+				</div>
+				<div className="flex gap-3">
+					<Button type="submit">Create Room</Button>
+					<a href="/dashboard/rooms">
+						<Button displayType="secondary">Cancel</Button>
+					</a>
+				</div>
+			</Form>
+		</div>
+	)
+}

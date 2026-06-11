@@ -45,7 +45,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const chatCard: ChatCard = {
 		cardsV2: [
 			{
-				cardId: 'orange-meets-feedback-card',
+				cardId: 'holstonmeet-feedback-card',
 				card: {
 					header: {
 						title: `Feedback from ${identity?.name ?? ''}`,

@@ -19,7 +19,7 @@ export const AudioGlow: FC<AudioGlowProps> = ({
 	return (
 		<span
 			className={cn(
-				type === 'text' ? 'orange-glow-text' : 'orange-glow-box',
+				type === 'text' ? 'indigo-glow-text' : 'indigo-glow-box',
 				'opacity-[--opacity] transition-opacity',
 				className
 			)}

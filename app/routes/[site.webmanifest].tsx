@@ -1,9 +1,9 @@
-import { json } from 'react-router'
+import { json } from '@remix-run/cloudflare'
 
 export const loader = async () => {
 	return json({
-		name: 'Orange Meets',
-		short_name: 'Orange Meets',
+		name: 'HolstonMeet',
+		short_name: 'HolstonMeet',
 		icons: [
 			{
 				src: '/android-chrome-192x192.png',

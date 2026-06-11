@@ -31,18 +31,23 @@ export default function Index() {
 	const { data } = useUserMetadata(username)
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full p-4 mx-auto">
+		<div className="flex flex-col items-center justify-center h-full p-4 mx-auto bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			<div className="flex-1"></div>
 			<div className="space-y-6 sm:min-w-96">
-				<div>
-					<h1 className="text-3xl font-bold">🍊 Orange Meets</h1>
-					<div className="flex items-center justify-between gap-3">
-						<p className="text-sm text-zinc-500 dark:text-zinc-400">
+				<div className="text-center">
+					<h1 className="text-4xl font-bold text-zinc-900 dark:text-white">
+						📹 HolstonMeet
+					</h1>
+					<p className="text-sm text-zinc-500 dark:text-zinc-400 mt-2">
+						Secure, real-time video meetings
+					</p>
+					<div className="flex items-center justify-center gap-3 mt-1">
+						<p className="text-xs text-zinc-400 dark:text-zinc-500">
 							Logged in as {data?.displayName}
 						</p>
 						{!usedAccess && (
 							<a
-								className="block text-sm underline text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+								className="text-xs underline text-indigo-600 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300"
 								href="/set-username"
 							>
 								Change

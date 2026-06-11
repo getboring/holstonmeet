@@ -7,6 +7,7 @@ import { requireUser, getOrg } from '~/utils/auth.server'
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
 import { Label } from '~/components/Label'
+import { roomSchema } from '~/utils/validation'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 	await requireUser(request, context.env)
@@ -20,10 +21,20 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	const db = getDb(context)
 
 	if (!db || !org) {
-		return json({ error: 'Database or organization unavailable' }, { status: 500 })
+		return json(
+			{ error: 'Database or organization unavailable' },
+			{ status: 500 }
+		)
 	}
 
-	// Check room limit
+	const formData = await request.formData()
+	const parsed = roomSchema.safeParse({ name: formData.get('name') })
+
+	if (!parsed.success) {
+		const firstError = parsed.error.issues[0]?.message ?? 'Invalid input'
+		return json({ error: firstError }, { status: 400 })
+	}
+
 	const [roomCountResult] = await db
 		.select({ count: count() })
 		.from(Rooms)
@@ -31,25 +42,20 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 	if ((roomCountResult?.count ?? 0) >= org.maxRooms) {
 		return json(
-			{ error: `Room limit reached (${org.maxRooms}). Upgrade your plan for more.` },
+			{
+				error: `Room limit reached (${org.maxRooms}). Upgrade your plan for more.`,
+			},
 			{ status: 403 }
 		)
 	}
 
-	const formData = await request.formData()
-	const name = formData.get('name')
-
-	if (typeof name !== 'string' || name.trim().length === 0) {
-		return json({ error: 'Room name is required' }, { status: 400 })
-	}
-
-	const slug = name
+	const slug = parsed.data.name
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, '-')
 		.replace(/^-|-$/g, '')
 
 	await db.insert(Rooms).values({
-		name: name.trim(),
+		name: parsed.data.name,
 		slug,
 		orgId: org.id,
 		createdBy: user.id,
@@ -78,7 +84,7 @@ export default function NewRoom() {
 			)}
 
 			<Form method="post" className="space-y-4">
-				<div className="space-y-2">
+				<div className="space-y-1.5">
 					<Label htmlFor="name">Room Name</Label>
 					<Input
 						id="name"

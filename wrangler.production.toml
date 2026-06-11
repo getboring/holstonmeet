@@ -2,7 +2,7 @@ name = "holstonmeet-production"
 
 account_id = "94bdc287cd4e0622b68f9e18e406ae66"
 main = "./build/index.js"
-compatibility_date = "2024-10-07"
+compatibility_date = "2026-06-11"
 compatibility_flags = ["nodejs_compat"]
 
 [site]

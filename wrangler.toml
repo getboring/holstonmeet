@@ -1,5 +1,5 @@
 name = "holstonmeet"
-compatibility_date = "2024-10-07"
+compatibility_date = "2026-06-11"
 main = "./build/index.js"
 compatibility_flags = ["nodejs_compat"]
 

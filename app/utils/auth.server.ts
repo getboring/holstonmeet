@@ -2,6 +2,7 @@ import { createCookieSessionStorage, redirect } from '@remix-run/cloudflare'
 import { eq } from 'drizzle-orm'
 import { Users, Organizations, getDb } from 'schema'
 import type { Env } from '~/types/Env'
+import { type Result, ok, err, ErrorCodes } from './result'
 
 function getStorage(env: Env) {
 	const secret = env.SESSION_SECRET ?? 'CHANGE_ME_IN_PRODUCTION'
@@ -38,14 +39,20 @@ export async function getUserSession(request: Request, env: Env) {
 	return storage.getSession(request.headers.get('Cookie'))
 }
 
-export async function getUserId(request: Request, env: Env): Promise<number | null> {
+export async function getUserId(
+	request: Request,
+	env: Env
+): Promise<number | null> {
 	const session = await getUserSession(request, env)
 	const userId = session.get('userId')
 	if (!userId || typeof userId !== 'number') return null
 	return userId
 }
 
-export async function requireUserId(request: Request, env: Env): Promise<number> {
+export async function requireUserId(
+	request: Request,
+	env: Env
+): Promise<number> {
 	const userId = await getUserId(request, env)
 	if (!userId) {
 		throw redirect('/login')
@@ -53,9 +60,18 @@ export async function requireUserId(request: Request, env: Env): Promise<number>
 	return userId
 }
 
-export async function getUser(request: Request, env: Env) {
+export async function getUser(
+	request: Request,
+	env: Env
+): Promise<Result<NonNullable<Awaited<ReturnType<typeof getUserFromDb>>>>> {
 	const userId = await getUserId(request, env)
-	if (!userId) return null
+	if (!userId) return err(ErrorCodes.UNAUTHORIZED, 'Not authenticated')
+	const user = await getUserFromDb(env, userId)
+	if (!user) return err(ErrorCodes.NOT_FOUND, 'User not found')
+	return ok(user)
+}
+
+async function getUserFromDb(env: Env, userId: number) {
 	const db = getDb({ env })
 	if (!db) return null
 	const [user] = await db.select().from(Users).where(eq(Users.id, userId))
@@ -63,22 +79,22 @@ export async function getUser(request: Request, env: Env) {
 }
 
 export async function requireUser(request: Request, env: Env) {
-	const user = await getUser(request, env)
-	if (!user) {
+	const result = await getUser(request, env)
+	if (!result.success) {
 		throw redirect('/login')
 	}
-	return user
+	return result.data
 }
 
 export async function getOrg(request: Request, env: Env) {
-	const user = await getUser(request, env)
-	if (!user?.orgId) return null
+	const userResult = await getUser(request, env)
+	if (!userResult.success || !userResult.data.orgId) return null
 	const db = getDb({ env })
 	if (!db) return null
 	const [org] = await db
 		.select()
 		.from(Organizations)
-		.where(eq(Organizations.id, user.orgId))
+		.where(eq(Organizations.id, userResult.data.orgId))
 	return org ?? null
 }
 

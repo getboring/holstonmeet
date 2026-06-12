@@ -28,7 +28,7 @@ export const action: ActionFunction = async ({ request }) => {
 export default function Index() {
 	const { username, usedAccess } = useLoaderData<typeof loader>()
 	const navigate = useNavigate()
-	const { data } = useUserMetadata(username)
+	const data = useUserMetadata(username)
 
 	return (
 		<div className="flex flex-col items-center justify-center h-full p-4 mx-auto bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">

@@ -21,7 +21,7 @@ export const MuteUserButton: FC<MuteUserButtonProps> = ({
 	mutedDisplayType = 'danger',
 }) => {
 	const { room } = useRoomContext()
-	const { data } = useUserMetadata(user.name)
+	const data = useUserMetadata(user.name)
 
 	if (user.tracks.audioUnavailable) {
 		return (

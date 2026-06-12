@@ -7,7 +7,7 @@ import { useObservableAsValue } from 'partytracks/react'
 import { useEffect, useMemo, useState } from 'react'
 import { useStablePojo } from './useStablePojo'
 
-setLogLevel('debug')
+setLogLevel(process.env.NODE_ENV === 'development' ? 'debug' : 'warn')
 
 export const usePeerConnection = (config: PartyTracksConfig) => {
 	const stableConfig = useStablePojo(config)

@@ -36,10 +36,9 @@ const defaultOpenAIModelID = 'gpt-4o-realtime-preview-2024-10-01'
  * to all others.
  */
 export class ChatRoom extends Server<Env> {
+	static options = { hibernate: true }
 	env: Env
 	db: DrizzleD1Database<Record<string, never>> | null
-
-	// static options = { hibernate: true }
 
 	constructor(ctx: DurableObjectState, env: Env) {
 		super(ctx, env)

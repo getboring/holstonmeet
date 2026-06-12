@@ -9,7 +9,7 @@ import { useUserMetadata } from './useUserMetadata'
 
 function UserJoinedOrLeftToast(props: { user: User; type: 'joined' | 'left' }) {
 	const { traceLink } = useRoomContext()
-	const { data } = useUserMetadata(props.user.name)
+	const data = useUserMetadata(props.user.name)
 	return (
 		<div className="flex items-center justify-center gap-2 text-sm">
 			<Toast.Title>

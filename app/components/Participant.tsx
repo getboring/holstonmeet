@@ -11,7 +11,6 @@ import { useUserMetadata } from '~/hooks/useUserMetadata'
 import { useVideoDimensions } from '~/hooks/useVideoDimensions'
 import type { User } from '~/types/Messages'
 import isNonNullable from '~/utils/isNonNullable'
-import populateTraceLink from '~/utils/populateTraceLink'
 import { ewma } from '~/utils/rxjs/ewma'
 import { getPacketLoss$ } from '~/utils/rxjs/getPacketLoss$'
 import { cn } from '~/utils/style'
@@ -26,7 +25,6 @@ import {
 import { HoverFade } from './HoverFade'
 import { Icon } from './Icon/Icon'
 import { MuteUserButton } from './MuteUserButton'
-import { OptionalLink } from './OptionalLink'
 import { usePulledAudioTrack } from './PullAudioTracks'
 import { Spinner } from './Spinner'
 import { Tooltip } from './Tooltip'
@@ -59,9 +57,8 @@ export const Participant = forwardRef<
 	HTMLDivElement,
 	JSX.IntrinsicElements['div'] & Props
 >(({ user, style }, ref) => {
-	const { data } = useUserMetadata(user.name)
+	const data = useUserMetadata(user.name)
 	const {
-		traceLink,
 		partyTracks,
 		dataSaverMode,
 		simulcastEnabled,
@@ -250,34 +247,27 @@ export const Participant = forwardRef<
 							)}
 						</div>
 					)}
-					{data?.displayName && user.transceiverSessionId && (
-						<div className="flex items-center gap-2 absolute m-2 text-shadow left-1 bottom-1">
-							<ConnectionIndicator quality={getConnectionQuality(packetLoss)} />
-							<OptionalLink
-								className="leading-none text-sm"
-								href={populateTraceLink(user.transceiverSessionId, traceLink)}
-								target="_blank"
-								rel="noopener noreferrer"
-							>
-								{data.displayName}
-								{showDebugInfo && peerConnection && (
-									<span className="opacity-50">
-										{' '}
-										{[
-											audioMid && `audio mid: ${audioMid}`,
-											videoMid && `video mid: ${videoMid}`,
-											`vid size: ${videoWidth}x${videoHeight}`,
-											!isSelf &&
-												preferredRid &&
-												`preferredRid: ${preferredRid}`,
-										]
-											.filter(Boolean)
-											.join(' ')}
-									</span>
-								)}
-							</OptionalLink>
-						</div>
-					)}
+					<div className="absolute m-2 text-shadow left-1 bottom-1 flex items-center gap-2">
+						<ConnectionIndicator quality={getConnectionQuality(packetLoss)} />
+						<span className="leading-none text-sm">
+							{data.displayName || user.name}
+							{showDebugInfo && peerConnection && (
+								<span className="opacity-50">
+									{' '}
+									{[
+										audioMid && `audio mid: ${audioMid}`,
+										videoMid && `video mid: ${videoMid}`,
+										`vid size: ${videoWidth}x${videoHeight}`,
+										!isSelf &&
+											preferredRid &&
+											`preferredRid: ${preferredRid}`,
+									]
+										.filter(Boolean)
+										.join(' ')}
+								</span>
+							)}
+						</span>
+					</div>
 					<div className="absolute top-0 right-0 flex gap-4 p-4">
 						{user.raisedHand && !isScreenShare && (
 							<Tooltip content="Hand is raised">

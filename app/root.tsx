@@ -18,7 +18,6 @@ import type { FC, ReactNode } from 'react'
 import { useRef } from 'react'
 import { useFullscreen, useToggle } from 'react-use'
 
-import { QueryClient, QueryClientProvider } from 'react-query'
 import tailwind from '~/styles/tailwind.css'
 import { elementNotContainedByClickTarget } from './utils/elementNotContainedByClickTarget'
 import getUsername from './utils/getUsername.server'
@@ -224,20 +223,16 @@ export const ErrorBoundary = () => {
 	)
 }
 
-const queryClient = new QueryClient()
-
 export default function App() {
 	const { userDirectoryUrl } = useLoaderData<typeof loader>()
 	return (
 		<Document>
 			<div id="root" className="h-full bg-inherit isolate">
-				<QueryClientProvider client={queryClient}>
-					<Outlet
-						context={{
-							userDirectoryUrl,
-						}}
-					/>
-				</QueryClientProvider>
+				<Outlet
+					context={{
+						userDirectoryUrl,
+					}}
+				/>
 			</div>
 		</Document>
 	)

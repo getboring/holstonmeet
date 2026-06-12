@@ -19,7 +19,7 @@ const UserListItem: FC<{
 	children?: ReactNode
 }> = ({ user, audioTrack }) => {
 	const { traceLink } = useRoomContext()
-	const { data } = useUserMetadata(user.name)
+	const data = useUserMetadata(user.name)
 
 	return (
 		<li className="flex items-center gap-4 text-base h-9">

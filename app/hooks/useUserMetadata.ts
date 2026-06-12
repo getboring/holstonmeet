@@ -1,5 +1,5 @@
 import { useOutletContext } from '@remix-run/react'
-import { useQuery } from 'react-query'
+import { useEffect, useState } from 'react'
 
 interface UserMetadata {
 	displayName: string
@@ -11,31 +11,33 @@ interface UserMetadata {
 
 export function useUserMetadata(email: string) {
 	const { userDirectoryUrl } = useOutletContext<{ userDirectoryUrl?: string }>()
-	const search = new URLSearchParams({ email })
+	const [data, setData] = useState<UserMetadata>({ displayName: email })
 
-	const key = `${userDirectoryUrl}?${search}`
+	useEffect(() => {
+		if (!userDirectoryUrl) return
+		const controller = new AbortController()
 
-	const initialData: UserMetadata = {
-		displayName: email,
-	}
-
-	return useQuery({
-		initialData,
-		queryKey: [key],
-		queryFn: async ({ queryKey: [key] }) => {
-			if (userDirectoryUrl === undefined) return Promise.resolve(initialData)
-			const response = await fetch(key, { credentials: 'include' })
-
-			if (
-				response.headers.get('Content-Type')?.startsWith('application/json')
-			) {
-				const parsedData: UserMetadata = (await response.json()) as any
-				return {
-					...parsedData,
-					displayName: `${parsedData.firstName} ${parsedData.lastName}`,
+		fetch(`${userDirectoryUrl}?email=${encodeURIComponent(email)}`, {
+			credentials: 'include',
+			signal: controller.signal,
+		})
+			.then((r) => {
+				if (!r.headers.get('Content-Type')?.startsWith('application/json'))
+					return null
+				return r.json() as Promise<UserMetadata>
+			})
+			.then((parsed: UserMetadata | null) => {
+				if (parsed) {
+					setData({
+						...parsed,
+						displayName: `${parsed.firstName} ${parsed.lastName}`,
+					})
 				}
-			}
-			return initialData
-		},
-	})
+			})
+			.catch(() => {})
+
+		return () => controller.abort()
+	}, [userDirectoryUrl, email])
+
+	return data
 }

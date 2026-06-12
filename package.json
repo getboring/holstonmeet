@@ -42,7 +42,6 @@
 		"@radix-ui/react-toast": "^1.2.1",
 		"@radix-ui/react-tooltip": "^1.1.2",
 		"@radix-ui/react-visually-hidden": "^1.1.0",
-		"@reactivex/rxjs": "^6.6.7",
 		"@remix-run/cloudflare": "2.11.1",
 		"@remix-run/react": "2.11.1",
 		"@tensorflow-models/body-segmentation": "^1.0.2",
@@ -59,7 +58,6 @@
 		"react": "^18.3.1",
 		"react-dom": "^18.3.1",
 		"react-flip-toolkit": "^7.2.4",
-		"react-query": "^3.39.3",
 		"react-use": "^17.5.1",
 		"rxjs": "^7.8.1",
 		"tailwind-merge": "^2.4.0",
@@ -93,9 +91,7 @@
 	"overrides": {
 		"msw": {
 			"typescript": "$typescript"
-		},
-		"pretty-format": "29.7.0",
-		"esbuild": "^0.23.0"
+		}
 	},
 	"engines": {
 		"node": ">=16.13"

@@ -27,8 +27,8 @@ const notImplemented = () => {
 export const createKvAssetHandler = (ASSET_MANIFEST: Record<string, string>) =>
 	async function handleAsset(
 		request: Request,
-		env: any,
-		ctx: any,
+		env: { __STATIC_CONTENT: KVNamespace },
+		ctx: ExecutionContext,
 		build: ServerBuild
 	) {
 		const ASSET_NAMESPACE = env.__STATIC_CONTENT
@@ -98,11 +98,16 @@ export const createKvAssetHandler = (ASSET_MANIFEST: Record<string, string>) =>
 export { ChatRoom } from './app/durableObjects/ChatRoom.server'
 export { queue } from './app/queue'
 
-const kvAssetHandler = createKvAssetHandler(JSON.parse(manifestJSON))
+	const kvAssetHandler = createKvAssetHandler(JSON.parse(manifestJSON))
 
 export default {
 	async fetch(request: Request, env: Env, ctx: ExecutionContext) {
-		const assetResponse = await kvAssetHandler(request, env, ctx, build)
+		const assetResponse = await kvAssetHandler(
+			request,
+			env as unknown as { __STATIC_CONTENT: KVNamespace },
+			ctx,
+			build
+		)
 		if (assetResponse) return assetResponse
 		return remixHandler(request, { env, mode })
 	},

@@ -12,7 +12,7 @@ import { ACCESS_AUTHENTICATED_USER_EMAIL_HEADER } from '~/utils/constants'
 import getUsername from '~/utils/getUsername.server'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const directoryUrl = context.USER_DIRECTORY_URL
+	const directoryUrl = context.env.USER_DIRECTORY_URL
 	const username = await getUsername(request)
 	invariant(username)
 	const usedAccess = request.headers.has(ACCESS_AUTHENTICATED_USER_EMAIL_HEADER)

@@ -55,13 +55,6 @@ export class ChatRoom extends Server<Env> {
 		const meetingId = await this.getMeetingId()
 		log({ eventName: 'onStart', meetingId })
 		this.db = getDb(this)
-		// TODO: make this a part of partyserver
-		// this.ctx.setWebSocketAutoResponse(
-		// 	new WebSocketRequestResponsePair(
-		// 		JSON.stringify({ type: 'partyserver-ping' }),
-		// 		JSON.stringify({ type: 'partyserver-pong' })
-		// 	)
-		// )
 	}
 
 	async onConnect(
@@ -321,19 +314,26 @@ export class ChatRoom extends Server<Env> {
 						`session-${connection.id}`
 					)
 
+					let dmDelivered = false
 					for (const otherConnection of this.getConnections<User>()) {
 						if (otherConnection.id === to) {
 							this.sendMessage(otherConnection, {
 								type: 'directMessage',
-								from: fromUser!.name,
+								from: fromUser?.name ?? 'Unknown',
 								message,
 							})
+							dmDelivered = true
 							break
 						}
 					}
-					console.warn(
-						`User with id "${to}" not found, cannot send DM from "${fromUser!.name}"`
-					)
+					if (!dmDelivered) {
+						log({
+							eventName: 'dmUserNotFound',
+							meetingId,
+							to,
+							from: fromUser?.name,
+						})
+					}
 					break
 				}
 				case 'muteUser': {
@@ -346,19 +346,21 @@ export class ChatRoom extends Server<Env> {
 							const otherUser = await this.ctx.storage.get<User>(
 								`session-${data.id}`
 							)
-							await this.ctx.storage.put(`session-${data.id}`, {
-								...otherUser!,
-								tracks: {
-									...otherUser!.tracks,
-									audioEnabled: false,
-								},
-							})
-							this.sendMessage(otherConnection, {
-								type: 'muteMic',
-							})
+							if (otherUser) {
+								await this.ctx.storage.put(`session-${data.id}`, {
+									...otherUser,
+									tracks: {
+										...otherUser.tracks,
+										audioEnabled: false,
+									},
+								})
+								this.sendMessage(otherConnection, {
+									type: 'muteMic',
+								})
 
-							await this.broadcastRoomState()
-							mutedUser = true
+								await this.broadcastRoomState()
+								mutedUser = true
+							}
 							break
 						}
 					}
@@ -519,9 +521,8 @@ export class ChatRoom extends Server<Env> {
 							tracks: [
 								{
 									location: 'remote',
-									sessionId: track.sessionId,
-									trackName: track.trackName,
-									// Let Calls to find out the actual mid value
+									sessionId: track.sessionId ?? '',
+									trackName: track.trackName ?? '',
 									mid: `#ai-generated-voice`,
 								},
 							],
@@ -557,12 +558,9 @@ export class ChatRoom extends Server<Env> {
 				error,
 			})
 			assertError(error)
-			// TODO: should this even be here?
-			// Report any exceptions directly back to the client. As with our handleErrors() this
-			// probably isn't what you'd want to do in production, but it's convenient when testing.
 			this.sendMessage(connection, {
 				type: 'error',
-				error: error.stack,
+				error: 'An internal error occurred',
 			} satisfies ServerMessage)
 		}
 	}

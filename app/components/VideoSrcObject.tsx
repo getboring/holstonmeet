@@ -46,4 +46,4 @@ export const VideoSrcObject = forwardRef<HTMLVideoElement, VideoSrcObjectProps>(
 	}
 )
 
-VideoSrcObject.displayName = 'VidoSrcObject'
+VideoSrcObject.displayName = 'VideoSrcObject'

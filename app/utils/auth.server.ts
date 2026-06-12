@@ -5,11 +5,16 @@ import type { Env } from '~/types/Env'
 import { type Result, ok, err, ErrorCodes } from './result'
 
 function getStorage(env: Env) {
-	const secret = env.SESSION_SECRET ?? 'CHANGE_ME_IN_PRODUCTION'
+	const secret = env.SESSION_SECRET
+	if (!secret) {
+		console.error(
+			'FATAL: SESSION_SECRET env var is not set. Sessions will be insecure.'
+		)
+	}
 	return createCookieSessionStorage({
 		cookie: {
 			name: '__hm_session',
-			secrets: [secret],
+			secrets: [secret ?? crypto.randomUUID()],
 			sameSite: 'lax',
 			httpOnly: true,
 			secure: true,

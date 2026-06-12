@@ -79,6 +79,12 @@ export type LogEvent =
 			connectionId: string
 			sessionId?: string
 	  }
+	| {
+			eventName: 'dmUserNotFound'
+			meetingId?: string
+			to: string
+			from?: string
+	  }
 
 export function log(event: LogEvent) {
 	console.log(event)

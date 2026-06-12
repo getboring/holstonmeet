@@ -21,14 +21,26 @@ interface NewTracksResponse {
 	errorDescription?: string
 }
 
+interface NewTracksRequest {
+	sessionDescription?: SessionDescription
+	tracks: Array<{
+		location: 'local' | 'remote'
+		trackName: string
+		sessionId?: string
+		mid?: string
+		bidirectionalMediaStream?: boolean
+		kind?: 'audio' | 'video'
+	}>
+}
+
 export class CallsSession {
 	sessionId: string
-	headers: any
+	headers: Record<string, string>
 	endpoint: string
 	params: URLSearchParams
 	constructor(
 		sessionId: string,
-		headers: any,
+		headers: Record<string, string>,
 		endpoint: string,
 		apiExtraParams?: string,
 		meetingId?: string
@@ -41,7 +53,7 @@ export class CallsSession {
 			this.params.set('correlationId', meetingId)
 		}
 	}
-	async NewTracks(body: any): Promise<NewTracksResponse> {
+	async NewTracks(body: NewTracksRequest): Promise<NewTracksResponse> {
 		const newTracksURL = new URL(
 			`${this.endpoint}/sessions/${this.sessionId}/tracks/new?${this.params.toString()}`
 		)

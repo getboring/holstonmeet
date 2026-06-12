@@ -23,7 +23,12 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	}
 	const requestUrl = new URL(request.url)
 	const formData = await request.formData()
-	const info: BugReportInfo = JSON.parse(String(formData.get('info')))
+	let info: BugReportInfo
+	try {
+		info = JSON.parse(String(formData.get('info') ?? '{}'))
+	} catch {
+		return json({ error: 'Invalid info payload' }, { status: 400 })
+	}
 	const { identity, roomName, roomHistory, url } = info
 	const description = formData.get('description')
 	invariant(typeof description === 'string')

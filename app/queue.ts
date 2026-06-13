@@ -12,8 +12,6 @@ export const queue = async (batch: MessageBatch<ChatCard>, env: Env) => {
 			} catch (error) {
 				message.retry()
 			}
-		} else {
-			console.log('would have posted to feedback URL', message)
 		}
 	}
 }

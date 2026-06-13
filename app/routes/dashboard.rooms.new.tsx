@@ -4,6 +4,7 @@ import { Form, useActionData, useLoaderData } from 'react-router'
 import { and, count, eq } from 'drizzle-orm'
 import { Rooms, getDb } from 'schema'
 import { requireUser, getOrg } from '~/utils/auth.server'
+import { validateCsrfToken } from '~/utils/csrf.server'
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
 import { Label } from '~/components/Label'
@@ -16,6 +17,10 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
+	if (!(await validateCsrfToken(request, context.cloudflare.env))) {
+		return { error: 'Invalid or missing CSRF token', status: 403 as const }
+	}
+
 	const user = await requireUser(request, context.cloudflare.env)
 	const org = await getOrg(request, context.cloudflare.env)
 	const db = getDb(context)

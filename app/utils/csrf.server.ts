@@ -2,11 +2,10 @@ import { createCookieSessionStorage } from 'react-router'
 import { mode } from './mode'
 import type { Env } from '~/types/Env'
 
-const DEFAULT_CSRF_SECRET = 'holstonmeet-csrf-fallback'
 const COOKIE_NAME = '__hm_csrf'
 
 function getCsrfStorage(env?: Env) {
-	const secret = env?.SESSION_SECRET || DEFAULT_CSRF_SECRET
+	const secret = env?.SESSION_SECRET || crypto.randomUUID()
 	return createCookieSessionStorage({
 		cookie: {
 			name: COOKIE_NAME,

@@ -85,7 +85,32 @@ export type LogEvent =
 			to: string
 			from?: string
 	  }
+	| {
+			eventName: 'aiRenegotiation'
+			meetingId?: string
+			phase: string
+	  }
+	| {
+			eventName: 'aiSessionStarted'
+			meetingId?: string
+			sessionId: string
+	  }
+	| {
+			eventName: 'aiExchangeStepTwo'
+			meetingId?: string
+			phase: string
+	  }
+	| {
+			eventName: 'openaiRequest'
+			endpoint: string
+	  }
+	| {
+			eventName: 'openaiError'
+			endpoint: string
+			status?: number
+	  }
 
 export function log(event: LogEvent) {
-	console.log(event)
+	// eslint-disable-next-line no-console
+	console.log(JSON.stringify(event))
 }

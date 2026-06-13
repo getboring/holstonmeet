@@ -458,14 +458,14 @@ export class ChatRoom extends Server<Env> {
 							params
 						)
 
-						console.log('OpenAI answer', openaiAnswer)
+						log({ eventName: 'aiRenegotiation', meetingId: this.name, phase: 'answer' })
 
 						// And the negotiation is completed by setting the answer from OpenAI
 						const renegotiationResponse =
 							await openAiSession.Renegotiate(openaiAnswer)
-						console.log('renegotiationResponse', renegotiationResponse)
+						log({ eventName: 'aiRenegotiation', meetingId: this.name, phase: 'complete' })
 
-						console.log('set ai:sessionId', openAiSession.sessionId)
+						log({ eventName: 'aiSessionStarted', meetingId: this.name, sessionId: openAiSession.sessionId })
 						await this.ctx.storage.put('ai:sessionId', openAiSession.sessionId)
 						await this.ctx.storage.put(
 							'ai:trackName',
@@ -513,10 +513,7 @@ export class ChatRoom extends Server<Env> {
 
 						const { track } = data
 
-						console.log('starting exchangeStepTwo, pulling', {
-							session: track.sessionId,
-							trackName: track.trackName,
-						})
+						log({ eventName: 'aiExchangeStepTwo', meetingId: this.name, phase: 'start' })
 						const exchangeStepTwo = await openAiSession.NewTracks({
 							tracks: [
 								{
@@ -528,7 +525,7 @@ export class ChatRoom extends Server<Env> {
 							],
 						})
 
-						console.log('exchangeStepTwo result', exchangeStepTwo)
+						log({ eventName: 'aiExchangeStepTwo', meetingId: this.name, phase: 'complete' })
 						checkNewTracksResponse(exchangeStepTwo)
 
 						await this.ctx.storage.put('ai:userControlling', connection.id)

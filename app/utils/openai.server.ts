@@ -1,3 +1,5 @@
+import { log } from './logging'
+
 export interface SessionDescription {
 	sdp: string
 	type: string
@@ -62,7 +64,9 @@ export class CallsSession {
 			headers: this.headers,
 			body: JSON.stringify(body),
 		}).then(async (res) => {
-			console.log(await res.clone().text())
+			if (!res.ok) {
+				log({ eventName: 'openaiError', endpoint: 'newTracks', status: res.status })
+			}
 			return res.json()
 		})) as NewTracksResponse
 		return newTracksResponse
@@ -105,13 +109,15 @@ export async function CallsNewSession(
 		newSessionURL.searchParams.set('thirdparty', 'true')
 	}
 
-	console.log(`Request to: ${newSessionURL.href}`)
+	log({ eventName: 'openaiRequest', endpoint: newSessionURL.pathname })
 	const sessionResponse = (await fetch(newSessionURL.href, {
 		method: 'POST',
 		headers: headers,
 	})
 		.then(async (res) => {
-			console.log(await res.clone().text())
+			if (!res.ok) {
+				log({ eventName: 'openaiError', endpoint: 'newSession', status: res.status })
+			}
 			return res
 		})
 
@@ -149,7 +155,7 @@ export async function requestOpenAIService(
 	openAiModelEndpoint: string,
 	searchParams?: URLSearchParams
 ): Promise<SessionDescription> {
-	console.log(`Request to: ${openAiModelEndpoint}`)
+	log({ eventName: 'openaiRequest', endpoint: openAiModelEndpoint })
 	const endpointURL = new URL(openAiModelEndpoint)
 	endpointURL.search = searchParams?.toString() ?? ''
 	const response = await fetch(endpointURL.href, {

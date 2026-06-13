@@ -2,11 +2,15 @@
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "holstonmeet-development",
 	"main": "./workers/app.ts",
+
+t"alias": {
+tt"virtual:react-router/server-build": "./build/server/index.js"
+t},
 	"compatibility_date": "2026-06-12",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat_v2"],
 
 	"assets": {
-		"directory": "./public",
+		"directory": "./build/client",
 		"binding": "ASSETS"
 	},
 
@@ -62,11 +66,10 @@
 	"migrations": [
 		{
 			"tag": "v1",
-			"new_classes": ["ChatRoom", "RateLimiter"]
+			"new_classes": ["ChatRoom"]
 		},
 		{
 			"tag": "v2",
-			"deleted_classes": ["RateLimiter"]
 		}
 	],
 

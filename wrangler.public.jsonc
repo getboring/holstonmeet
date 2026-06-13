@@ -3,10 +3,14 @@
 	"name": "holstonmeet-public",
 	"main": "./workers/app.ts",
 	"compatibility_date": "2026-06-12",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": ["nodejs_compat_v2"],
+
+	"alias": {
+		"virtual:react-router/server-build": "./build/server/index.js"
+	},
 
 	"assets": {
-		"directory": "./public",
+		"directory": "./build/client",
 		"binding": "ASSETS"
 	},
 
@@ -15,6 +19,14 @@
 		"TURN_SERVICE_ID": "YOUR_TURN_SERVICE_ID",
 		"PUBLIC": "true"
 	},
+
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "holstonmeet-db-production",
+			"database_id": "b90f95aa-f13a-4fcc-b562-4e9c8db4a8d6"
+		}
+	],
 
 	"durable_objects": {
 		"bindings": [
@@ -28,11 +40,7 @@
 	"migrations": [
 		{
 			"tag": "v1",
-			"new_classes": ["ChatRoom", "RateLimiter"]
-		},
-		{
-			"tag": "v2",
-			"deleted_classes": ["RateLimiter"]
+			"new_classes": ["ChatRoom"]
 		}
 	]
 }

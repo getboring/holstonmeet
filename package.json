@@ -13,7 +13,7 @@
 		"clean": "del public/build && del build",
 		"ci-test": "CI=true run-p typecheck test",
 		"remove-sourcemaps": "del public/build/**/*.map",
-		"deploy": "pnpm run ci-test && pnpm run build -- --sourcemap && pnpm run remove-sourcemaps && wrangler deploy --define __RELEASE__:\\\"$(git rev-parse --short HEAD)\\\" --define __SENTRY_DSN__:\\\"$SENTRY_DSN\\\" ${WRANGLER_ARGS:-}",
+		"deploy": "pnpm run check && pnpm run build && wrangler deploy",
 		"typecheck": "tsc --noEmit --skipLibCheck",
 		"typecheck:watch": "pnpm run typecheck -- --watch",
 		"test": "vitest",

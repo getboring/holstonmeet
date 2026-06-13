@@ -1,7 +1,7 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json, redirect } from '@remix-run/cloudflare'
-import { Form, useActionData, useLoaderData } from '@remix-run/react'
-import { count, eq } from 'drizzle-orm'
+import { redirect } from 'react-router'
+import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
+import { Form, useActionData, useLoaderData } from 'react-router'
+import { and, count, eq } from 'drizzle-orm'
 import { Rooms, getDb } from 'schema'
 import { requireUser, getOrg } from '~/utils/auth.server'
 import { Button } from '~/components/Button'
@@ -10,21 +10,18 @@ import { Label } from '~/components/Label'
 import { roomSchema } from '~/utils/validation'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	await requireUser(request, context.env)
-	const org = await getOrg(request, context.env)
-	return json({ org })
+	await requireUser(request, context.cloudflare.env)
+	const org = await getOrg(request, context.cloudflare.env)
+	return { org }
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-	const user = await requireUser(request, context.env)
-	const org = await getOrg(request, context.env)
+	const user = await requireUser(request, context.cloudflare.env)
+	const org = await getOrg(request, context.cloudflare.env)
 	const db = getDb(context)
 
 	if (!db || !org) {
-		return json(
-			{ error: 'Database or organization unavailable' },
-			{ status: 500 }
-		)
+		return { error: 'Database or organization unavailable', status: 500 as const }
 	}
 
 	const formData = await request.formData()
@@ -32,7 +29,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 	if (!parsed.success) {
 		const firstError = parsed.error.issues[0]?.message ?? 'Invalid input'
-		return json({ error: firstError }, { status: 400 })
+		return { error: firstError, status: 400 as const }
 	}
 
 	const [roomCountResult] = await db
@@ -41,18 +38,22 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		.where(eq(Rooms.orgId, org.id))
 
 	if ((roomCountResult?.count ?? 0) >= org.maxRooms) {
-		return json(
-			{
-				error: `Room limit reached (${org.maxRooms}). Upgrade your plan for more.`,
-			},
-			{ status: 403 }
-		)
+		return { error: `Room limit reached (${org.maxRooms}). Upgrade your plan for more.`, status: 403 as const }
 	}
 
 	const slug = parsed.data.name
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, '-')
 		.replace(/^-|-$/g, '')
+
+	const [existingSlug] = await db
+		.select()
+		.from(Rooms)
+		.where(and(eq(Rooms.orgId, org.id), eq(Rooms.slug, slug)))
+
+	if (existingSlug) {
+		return { error: 'A room with that name already exists in your organization', status: 409 as const }
+	}
 
 	await db.insert(Rooms).values({
 		name: parsed.data.name,
@@ -77,9 +78,9 @@ export default function NewRoom() {
 				</p>
 			</div>
 
-			{actionData?.error && (
+			{'error' in (actionData ?? {}) && (
 				<div className="p-3 rounded-lg text-sm bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-800">
-					{actionData.error}
+					{(actionData as { error: string }).error}
 				</div>
 			)}
 

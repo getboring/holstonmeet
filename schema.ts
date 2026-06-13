@@ -73,9 +73,18 @@ export const Rooms = sqliteTable('Rooms', {
 	isActive: integer('isActive', { mode: 'boolean' }).notNull().default(true),
 })
 
-export function getDb(context: { env: Env }) {
-	if (!context.env.DB) {
+export const RateLimits = sqliteTable('RateLimits', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	key: text('key').notNull(),
+	created: text('created')
+		.default(sql`CURRENT_TIMESTAMP`)
+		.notNull(),
+})
+
+export function getDb(context: { env: Env } | { cloudflare: { env: Env } }) {
+	const env = 'cloudflare' in context ? context.cloudflare.env : context.env
+	if (!env.DB) {
 		return null
 	}
-	return drizzle(context.env.DB)
+	return drizzle(env.DB)
 }

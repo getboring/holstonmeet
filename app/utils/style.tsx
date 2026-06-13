@@ -10,13 +10,15 @@ export function style<Props extends { className?: string }, T>(
 	Component: ComponentType<Props>,
 	...styles: ClassValue[]
 ) {
-	const StyledComponent = forwardRef<T, Props>((props, ref) => (
-		<Component
-			ref={ref}
-			{...props}
-			className={cn(...styles, props.className)}
-		/>
-	))
+	const StyledComponent = forwardRef<T, Props>(function StyledInner(props, ref) {
+		return (
+			<Component
+				ref={ref as any}
+				{...(props as any)}
+				className={cn(...styles, (props as any).className)}
+			/>
+		)
+	})
 	StyledComponent.displayName = `styled(${
 		Component.displayName ?? Component.name
 	})`

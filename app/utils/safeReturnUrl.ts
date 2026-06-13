@@ -1,4 +1,4 @@
-import { redirect } from '@remix-run/cloudflare'
+import { redirect } from 'react-router'
 
 export function safeRedirect(url: string, init?: number | ResponseInit) {
 	if (

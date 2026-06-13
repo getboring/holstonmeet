@@ -1,5 +1,5 @@
-import type { LinkProps } from '@remix-run/react'
-import { Link } from '@remix-run/react'
+import type { LinkProps } from 'react-router'
+import { Link } from 'react-router'
 import { forwardRef } from 'react'
 import { cn } from '~/utils/style'
 
@@ -7,13 +7,13 @@ const displayTypeMap = {
 	primary: [
 		'text-white',
 		'bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800',
-		'shadow-sm hover:shadow-md',
+		'shadow-xs hover:shadow-sm',
 	],
 	secondary: [
 		'text-zinc-700 dark:text-zinc-200',
 		'bg-white hover:bg-zinc-50 dark:bg-zinc-800 dark:hover:bg-zinc-700',
 		'border border-zinc-200 dark:border-zinc-700',
-		'shadow-sm',
+		'shadow-xs',
 	],
 	ghost: [
 		'text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white',
@@ -22,7 +22,7 @@ const displayTypeMap = {
 	danger: [
 		'text-white',
 		'bg-red-600 hover:bg-red-700 active:bg-red-800',
-		'shadow-sm',
+		'shadow-xs',
 	],
 }
 

@@ -1,7 +1,7 @@
-import { RemixBrowser } from '@remix-run/react'
+import { HydratedRouter } from 'react-router/dom'
 import { startTransition } from 'react'
 import { hydrateRoot } from 'react-dom/client'
 
 startTransition(() => {
-	hydrateRoot(document, <RemixBrowser />)
+	hydrateRoot(document, <HydratedRouter />)
 })

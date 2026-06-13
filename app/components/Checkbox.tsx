@@ -15,7 +15,7 @@ export const Checkbox: FC<RadixCheckbox.CheckboxProps> = ({
 			'border-zinc-300 dark:border-zinc-600',
 			'bg-white dark:bg-zinc-800',
 			'flex items-center justify-center',
-			'shadow-sm',
+			'shadow-xs',
 			'hover:border-indigo-400 dark:hover:border-indigo-500',
 			'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 dark:focus:ring-offset-zinc-900',
 			'transition-colors duration-150',

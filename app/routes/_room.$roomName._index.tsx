@@ -1,7 +1,6 @@
 import { VisuallyHidden } from '@radix-ui/react-visually-hidden'
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import { useNavigate, useParams, useSearchParams } from '@remix-run/react'
+import type { LoaderFunctionArgs } from 'react-router'
+import { useNavigate, useParams, useSearchParams } from 'react-router'
 import { useObservableAsValue } from 'partytracks/react'
 import invariant from 'tiny-invariant'
 import { AudioIndicator } from '~/components/AudioIndicator'
@@ -21,9 +20,9 @@ import { useRoomUrl } from '~/hooks/useRoomUrl'
 import getUsername from '~/utils/getUsername.server'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const username = await getUsername(request)
+	const username = await getUsername(request, context.cloudflare.env)
 	invariant(username)
-	return json({ username, callsAppId: context.env.CALLS_APP_ID })
+	return ({ username, callsAppId: context.cloudflare.env.CALLS_APP_ID })
 }
 
 let refreshCheckDone = false
@@ -63,7 +62,7 @@ export default function Lobby() {
 	const [params] = useSearchParams()
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full p-4 bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+		<div className="flex flex-col items-center justify-center h-full p-4 bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			<div className="flex-1"></div>
 			<div className="space-y-6 w-full max-w-md">
 				<div className="text-center">

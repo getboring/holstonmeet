@@ -1,0 +1,38 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "holstonmeet-public",
+	"main": "./workers/app.ts",
+	"compatibility_date": "2026-06-12",
+	"compatibility_flags": ["nodejs_compat"],
+
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS"
+	},
+
+	"vars": {
+		"CALLS_APP_ID": "YOUR_CALLS_APP_ID",
+		"TURN_SERVICE_ID": "YOUR_TURN_SERVICE_ID",
+		"PUBLIC": "true"
+	},
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "rooms",
+				"class_name": "ChatRoom"
+			}
+		]
+	},
+
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["ChatRoom", "RateLimiter"]
+		},
+		{
+			"tag": "v2",
+			"deleted_classes": ["RateLimiter"]
+		}
+	]
+}

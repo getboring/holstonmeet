@@ -1,4 +1,4 @@
-import { useFetcher, useParams } from '@remix-run/react'
+import { useFetcher, useParams } from 'react-router'
 import type { FC } from 'react'
 import useCopyToClipboard from '~/hooks/useCopyToClipboard'
 import { useRoomContext } from '~/hooks/useRoomContext'

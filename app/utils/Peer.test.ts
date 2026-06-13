@@ -31,8 +31,8 @@ test('taskError', async () => {
 	})
 	try {
 		await p1
-	} catch (error: any) {
-		expect(error.message).eq(err1)
+	} catch (error: unknown) {
+		expect((error as Error).message).eq(err1)
 	}
 	expect(await p2).eq(ok)
 })

@@ -1,4 +1,4 @@
-export const debounce = <Callback extends (...args: any[]) => void>(
+export const debounce = <Callback extends (...args: never[]) => void>(
 	callback: Callback,
 	wait: number
 ) => {

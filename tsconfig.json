@@ -1,16 +1,17 @@
 {
-	"include": ["remix.env.d.ts", "**/*.ts", "**/*.tsx", "vitest.config.mts"],
+	"include": ["global.d.ts", "**/*.ts", "**/*.tsx", ".react-router/types/**/*", "vitest.config.mts"],
 	"compilerOptions": {
-		"lib": ["DOM", "DOM.Iterable", "ES2019"],
+		"lib": ["DOM", "DOM.Iterable", "ES2022"],
 		"types": ["@cloudflare/workers-types"],
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"allowSyntheticDefaultImports": true,
 		"jsx": "react-jsx",
 		"verbatimModuleSyntax": true,
+		"module": "ES2022",
 		"moduleResolution": "Bundler",
 		"resolveJsonModule": true,
-		"target": "ES2019",
+		"target": "ES2022",
 		"strict": true,
 		"allowJs": true,
 		"forceConsistentCasingInFileNames": true,
@@ -19,8 +20,7 @@
 		"paths": {
 			"~/*": ["./app/*"]
 		},
-
-		// Remix takes care of building everything in `remix build`.
+		"rootDirs": [".", "./.react-router/types"],
 		"noEmit": true
 	}
 }

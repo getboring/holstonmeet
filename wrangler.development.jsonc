@@ -1,0 +1,76 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "holstonmeet-development",
+	"main": "./workers/app.ts",
+	"compatibility_date": "2026-06-12",
+	"compatibility_flags": ["nodejs_compat"],
+
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS"
+	},
+
+	"kv_namespaces": [
+		{
+			"binding": "FEEDBACK_STORAGE",
+			"id": "YOUR_KV_NAMESPACE_ID"
+		}
+	],
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "rooms",
+				"class_name": "ChatRoom"
+			}
+		]
+	},
+
+	"vars": {
+		"CALLS_APP_ID": "YOUR_CALLS_APP_ID",
+		"TURN_SERVICE_ID": "YOUR_TURN_SERVICE_ID",
+		"EXPERIMENTAL_SIMULCAST_ENABLED": "true",
+		"DISABLE_LOBBY_ENFORCEMENT": "true"
+	},
+
+	"queues": {
+		"producers": [
+			{
+				"queue": "holstonmeet-feedback-queue-development",
+				"binding": "FEEDBACK_QUEUE"
+			}
+		],
+		"consumers": [
+			{
+				"queue": "holstonmeet-feedback-queue-development",
+				"max_batch_size": 10,
+				"max_batch_timeout": 5
+			}
+		]
+	},
+
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "holstonmeet-db-development",
+			"database_id": "YOUR_DEV_DB_ID",
+			"migrations_dir": "migrations",
+			"migrations_pattern": "migrations/*/migration.sql"
+		}
+	],
+
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["ChatRoom", "RateLimiter"]
+		},
+		{
+			"tag": "v2",
+			"deleted_classes": ["RateLimiter"]
+		}
+	],
+
+	"observability": {
+		"enabled": true
+	}
+}

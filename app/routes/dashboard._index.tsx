@@ -1,14 +1,13 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import { Link, useLoaderData } from '@remix-run/react'
+import type { LoaderFunctionArgs } from 'react-router'
+import { Link, useLoaderData } from 'react-router'
 import { desc, eq, count } from 'drizzle-orm'
 import { Meetings, Rooms, getDb } from 'schema'
 import { requireUser, getOrg } from '~/utils/auth.server'
 import { Button } from '~/components/Button'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const user = await requireUser(request, context.env)
-	const org = await getOrg(request, context.env)
+	const user = await requireUser(request, context.cloudflare.env)
+	const org = await getOrg(request, context.cloudflare.env)
 	const db = getDb(context)
 
 	let roomCount = 0
@@ -38,7 +37,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 			.limit(10)
 	}
 
-	return json({ user, org, roomCount, recentMeetings })
+	return ({ user, org, roomCount, recentMeetings })
 }
 
 export default function DashboardIndex() {
@@ -57,21 +56,21 @@ export default function DashboardIndex() {
 			</div>
 
 			<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-sm">
+				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-xs">
 					<p className="text-sm text-zinc-500">Rooms</p>
 					<p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">{roomCount}</p>
 					<p className="text-xs text-zinc-400 mt-0.5">
 						{org ? `of ${org.maxRooms} max` : ''}
 					</p>
 				</div>
-				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-sm">
+				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-xs">
 					<p className="text-sm text-zinc-500">Max Participants</p>
 					<p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1">
 						{org?.maxParticipantsPerRoom ?? 10}
 					</p>
 					<p className="text-xs text-zinc-400 mt-0.5">per room</p>
 				</div>
-				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-sm">
+				<div className="p-5 rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-xs">
 					<p className="text-sm text-zinc-500">Plan</p>
 					<p className="text-2xl font-bold text-zinc-900 dark:text-white mt-1 capitalize">
 						{org?.plan ?? 'free'}
@@ -95,7 +94,7 @@ export default function DashboardIndex() {
 						No meetings yet. Create a room to get started.
 					</p>
 				) : (
-					<div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-sm overflow-hidden">
+					<div className="rounded-xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-xs overflow-hidden">
 						<table className="w-full text-sm">
 							<thead className="bg-zinc-50 dark:bg-zinc-800">
 								<tr>

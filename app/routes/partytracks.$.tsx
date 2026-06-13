@@ -1,11 +1,11 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
+import type { LoaderFunctionArgs } from 'react-router'
 import { routePartyTracksRequest } from 'partytracks/server'
 
 const proxy = async ({ request, context }: LoaderFunctionArgs) =>
 	routePartyTracksRequest({
-		appId: context.env.CALLS_APP_ID,
-		token: context.env.CALLS_APP_SECRET,
-		realtimeApiBaseUrl: context.env.CALLS_API_URL,
+		appId: context.cloudflare.env.CALLS_APP_ID,
+		token: context.cloudflare.env.CALLS_APP_SECRET,
+		realtimeApiBaseUrl: context.cloudflare.env.CALLS_API_URL,
 		request,
 	})
 

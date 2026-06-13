@@ -1,5 +1,5 @@
-import { type ActionFunctionArgs } from '@remix-run/cloudflare'
-import { Form, useSearchParams } from '@remix-run/react'
+import { type ActionFunctionArgs } from 'react-router'
+import { Form, useSearchParams } from 'react-router'
 import { AnalyticsSimpleCallFeedback, getDb } from 'schema'
 import invariant from 'tiny-invariant'
 import { Button } from '~/components/Button'
@@ -33,7 +33,7 @@ export default function SetUsername() {
 	const [params] = useSearchParams()
 	const meetingId = params.get('meetingId')
 	return (
-		<div className="grid h-full gap-4 place-content-center bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+		<div className="grid h-full gap-4 place-content-center bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			{meetingId ? (
 				<>
 					<h1 className="text-3xl font-bold">Experience any issues?</h1>

@@ -1,13 +1,12 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import { Link, Outlet, useLoaderData } from '@remix-run/react'
+import type { LoaderFunctionArgs } from 'react-router'
+import { Link, Outlet, useLoaderData } from 'react-router'
 import { eq } from 'drizzle-orm'
 import { Rooms, getDb } from 'schema'
 import { requireUser, getOrg } from '~/utils/auth.server'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const user = await requireUser(request, context.env)
-	const org = await getOrg(request, context.env)
+	const user = await requireUser(request, context.cloudflare.env)
+	const org = await getOrg(request, context.cloudflare.env)
 	const db = getDb(context)
 
 	let rooms: Array<{
@@ -31,7 +30,7 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 			.where(eq(Rooms.orgId, org.id))
 	}
 
-	return json({ rooms, org })
+	return ({ rooms, org })
 }
 
 export default function RoomsLayout() {

@@ -1,4 +1,4 @@
-import { useSearchParams } from '@remix-run/react'
+import { useSearchParams } from 'react-router'
 import { useState, type ReactNode } from 'react'
 import { useRoomContext } from '~/hooks/useRoomContext'
 import type { ClientMessage } from '~/types/Messages'

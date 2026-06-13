@@ -1,4 +1,4 @@
-import { useOutletContext } from '@remix-run/react'
+import { useOutletContext } from 'react-router'
 import type { PartyTracks } from 'partytracks/client'
 import type { Dispatch, SetStateAction } from 'react'
 import type { UserMedia } from '~/hooks/useUserMedia'

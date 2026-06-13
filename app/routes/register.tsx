@@ -1,23 +1,35 @@
-import type { ActionFunctionArgs, LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json, redirect } from '@remix-run/cloudflare'
-import { Form, Link, useActionData } from '@remix-run/react'
+import { redirect } from 'react-router'
+import type { ActionFunctionArgs, LoaderFunctionArgs } from 'react-router'
+import { Form, Link, useActionData, useLoaderData } from 'react-router'
 import { eq } from 'drizzle-orm'
 import { Users, Organizations, getDb } from 'schema'
 import { Button } from '~/components/Button'
 import { Input } from '~/components/Input'
 import { Label } from '~/components/Label'
 import { createUserSession, getUserId, hashPassword } from '~/utils/auth.server'
+import { createCsrfToken, validateCsrfToken } from '~/utils/csrf.server'
+import { checkRateLimit } from '~/utils/rate-limit.server'
 import { registerSchema } from '~/utils/validation'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const userId = await getUserId(request, context.env)
+	const userId = await getUserId(request, context.cloudflare.env)
 	if (userId) return redirect('/dashboard')
-	return json({})
+	const { token, cookie } = await createCsrfToken(context.cloudflare.env)
+	return { csrfToken: token, cookie }
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
+	if (!(await validateCsrfToken(request, context.cloudflare.env))) {
+		return { error: 'Invalid or missing CSRF token', status: 403 as const }
+	}
+
 	const db = getDb(context)
-	if (!db) return json({ error: 'Database unavailable' }, { status: 500 })
+	if (!db) return { error: 'Database unavailable', status: 500 as const }
+
+	const { allowed } = await checkRateLimit(db, 'register')
+	if (!allowed) {
+		return { error: 'Too many registration attempts. Please try again later.', status: 429 as const }
+	}
 
 	const formData = await request.formData()
 	const parsed = registerSchema.safeParse({
@@ -29,7 +41,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 	if (!parsed.success) {
 		const firstError = parsed.error.issues[0]?.message ?? 'Invalid input'
-		return json({ error: firstError }, { status: 400 })
+		return { error: firstError, status: 400 as const }
 	}
 
 	const { name, email, password, orgName } = parsed.data
@@ -40,10 +52,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		.where(eq(Users.email, email))
 
 	if (existing) {
-		return json(
-			{ error: 'An account with this email already exists' },
-			{ status: 409 }
-		)
+		return { error: 'An account with this email already exists', status: 409 as const }
 	}
 
 	const orgSlug = orgName
@@ -52,13 +61,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		.replace(/^-|-$/g, '')
 
 	if (orgSlug.length < 1) {
-		return json(
-			{
-				error:
-					'Organization name must contain at least one alphanumeric character',
-			},
-			{ status: 400 }
-		)
+		return { error: 'Organization name must contain at least one alphanumeric character', status: 400 as const }
 	}
 
 	const [existingOrg] = await db
@@ -67,38 +70,40 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		.where(eq(Organizations.slug, orgSlug))
 
 	if (existingOrg) {
-		return json(
-			{ error: 'An organization with that name already exists' },
-			{ status: 409 }
-		)
+		return { error: 'An organization with that name already exists', status: 409 as const }
 	}
 
 	const passwordHash = await hashPassword(password)
 
-	const [org] = await db
-		.insert(Organizations)
-		.values({ name: orgName, slug: orgSlug })
-		.returning()
+	const result = await db.transaction(async (tx) => {
+		const [org] = await tx
+			.insert(Organizations)
+			.values({ name: orgName, slug: orgSlug })
+			.returning()
 
-	const [user] = await db
-		.insert(Users)
-		.values({
-			name,
-			email,
-			passwordHash,
-			role: 'owner',
-			orgId: org.id,
-		})
-		.returning()
+		const [user] = await tx
+			.insert(Users)
+			.values({
+				name,
+				email,
+				passwordHash,
+				role: 'owner',
+				orgId: org.id,
+			})
+			.returning()
 
-	return createUserSession(user.id, '/dashboard', context.env)
+		return { org, user }
+	})
+
+	return createUserSession(result.user.id, '/dashboard', context.cloudflare.env)
 }
 
 export default function Register() {
+	const loaderData = useLoaderData<typeof loader>()
 	const actionData = useActionData<typeof action>()
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full p-4 bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+		<div className="flex flex-col items-center justify-center h-full p-4 bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			<div className="w-full max-w-sm space-y-6">
 				<div className="text-center">
 					<h1 className="text-4xl font-bold text-zinc-900 dark:text-white">
@@ -109,12 +114,13 @@ export default function Register() {
 					</p>
 				</div>
 				<div className="p-6 rounded-2xl bg-white dark:bg-zinc-900 ring-1 ring-zinc-200/50 dark:ring-zinc-800/50 shadow-xl shadow-black/5 space-y-5">
-					{actionData?.error && (
+					{'error' in (actionData ?? {}) && (
 						<div className="p-3 rounded-lg text-sm bg-red-50 text-red-700 ring-1 ring-red-200 dark:bg-red-900/30 dark:text-red-300 dark:ring-red-800">
-							{actionData.error}
+							{(actionData as { error: string }).error}
 						</div>
 					)}
 					<Form method="post" className="space-y-4">
+						<input type="hidden" name="csrf_token" value={loaderData.csrfToken} />
 						<div className="space-y-1.5">
 							<Label htmlFor="orgName">Organization Name</Label>
 							<Input

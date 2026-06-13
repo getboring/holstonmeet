@@ -1,6 +1,5 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import { Outlet, useLoaderData, useParams } from '@remix-run/react'
+import type { LoaderFunctionArgs } from 'react-router'
+import { Outlet, useLoaderData, useParams } from 'react-router'
 import { useObservableAsValue, useValueAsObservable } from 'partytracks/react'
 import { useMemo, useState } from 'react'
 import { of } from 'rxjs'
@@ -44,22 +43,22 @@ export const loader = async ({ context }: LoaderFunctionArgs) => {
 		},
 	} = context
 
-	return json({
-		userDirectoryUrl: context.env.USER_DIRECTORY_URL,
+	return ({
+		userDirectoryUrl: context.cloudflare.env.USER_DIRECTORY_URL,
 		traceLink: TRACE_LINK,
 		apiExtraParams: API_EXTRA_PARAMS,
-		iceServers: await getIceServers(context.env),
+		iceServers: await getIceServers(context.cloudflare.env),
 		feedbackEnabled: Boolean(
-			context.env.FEEDBACK_URL &&
-				context.env.FEEDBACK_QUEUE &&
-				context.env.FEEDBACK_STORAGE
+			context.cloudflare.env.FEEDBACK_URL &&
+				context.cloudflare.env.FEEDBACK_QUEUE &&
+				context.cloudflare.env.FEEDBACK_STORAGE
 		),
 		maxWebcamFramerate: numberOrUndefined(MAX_WEBCAM_FRAMERATE),
 		maxWebcamBitrate: numberOrUndefined(MAX_WEBCAM_BITRATE),
 		maxWebcamQualityLevel: numberOrUndefined(MAX_WEBCAM_QUALITY_LEVEL),
 		maxApiHistory: numberOrUndefined(MAX_API_HISTORY),
 		simulcastEnabled: EXPERIMENTAL_SIMULCAST_ENABLED === 'true',
-		e2eeEnabled: context.env.E2EE_ENABLED === 'true',
+		e2eeEnabled: context.cloudflare.env.E2EE_ENABLED === 'true',
 	})
 }
 

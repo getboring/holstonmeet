@@ -1,11 +1,10 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
+import type { LoaderFunctionArgs } from 'react-router'
 import {
 	useLoaderData,
 	useNavigate,
 	useParams,
 	useSearchParams,
-} from '@remix-run/react'
+} from 'react-router'
 import { useEffect, useState } from 'react'
 import { useMount, useWindowSize } from 'react-use'
 import { AiButton } from '~/components/AiButton'
@@ -36,22 +35,22 @@ import getUsername from '~/utils/getUsername.server'
 import isNonNullable from '~/utils/isNonNullable'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const username = await getUsername(request)
+	const username = await getUsername(request, context.cloudflare.env)
 
-	return json({
+	return ({
 		username,
 		bugReportsEnabled: Boolean(
-			context.env.FEEDBACK_URL &&
-				context.env.FEEDBACK_QUEUE &&
-				context.env.FEEDBACK_STORAGE
+			context.cloudflare.env.FEEDBACK_URL &&
+				context.cloudflare.env.FEEDBACK_QUEUE &&
+				context.cloudflare.env.FEEDBACK_STORAGE
 		),
-		disableLobbyEnforcement: context.env.DISABLE_LOBBY_ENFORCEMENT === 'true',
+		disableLobbyEnforcement: context.cloudflare.env.DISABLE_LOBBY_ENFORCEMENT === 'true',
 		mode: context.mode,
-		hasDb: Boolean(context.env.DB),
+		hasDb: Boolean(context.cloudflare.env.DB),
 		hasAiCredentials: Boolean(
-			context.env.OPENAI_API_TOKEN && context.env.OPENAI_MODEL_ENDPOINT
+			context.cloudflare.env.OPENAI_API_TOKEN && context.cloudflare.env.OPENAI_MODEL_ENDPOINT
 		),
-		dashboardDebugLogsBaseUrl: context.env.DASHBOARD_WORKER_URL,
+		dashboardDebugLogsBaseUrl: context.cloudflare.env.DASHBOARD_WORKER_URL,
 	})
 }
 

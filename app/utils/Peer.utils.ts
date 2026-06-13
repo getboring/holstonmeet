@@ -13,7 +13,7 @@ export class FIFOScheduler {
 			this.#schedulerChain = this.#schedulerChain.then(async () => {
 				try {
 					resolve(await task())
-				} catch (error: any) {
+				} catch (error: unknown) {
 					reject(error)
 				}
 			})

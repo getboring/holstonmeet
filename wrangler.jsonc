@@ -1,0 +1,36 @@
+{
+	"$schema": "./node_modules/wrangler/config-schema.json",
+	"name": "holstonmeet",
+	"compatibility_date": "2026-06-12",
+	"main": "./workers/app.ts",
+	"compatibility_flags": ["nodejs_compat"],
+
+	"assets": {
+		"directory": "./public",
+		"binding": "ASSETS"
+	},
+
+	"vars": {
+		"CALLS_APP_ID": "YOUR_CALLS_SFU_APP_ID_HERE"
+	},
+
+	"durable_objects": {
+		"bindings": [
+			{
+				"name": "rooms",
+				"class_name": "ChatRoom"
+			}
+		]
+	},
+
+	"migrations": [
+		{
+			"tag": "v1",
+			"new_classes": ["ChatRoom"]
+		},
+		{
+			"tag": "v2",
+			"deleted_classes": ["RateLimiter"]
+		}
+	]
+}

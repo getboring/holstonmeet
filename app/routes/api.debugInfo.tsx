@@ -1,7 +1,7 @@
-import type { LoaderFunction } from '@remix-run/cloudflare'
+import type { LoaderFunction } from 'react-router'
 
 export const loader = (async ({ request, context }) => {
-	if (!context.env.FEEDBACK_STORAGE) {
+	if (!context.cloudflare.env.FEEDBACK_STORAGE) {
 		throw new Response('404: Missing KV Binding', { status: 404 })
 	}
 
@@ -13,7 +13,7 @@ export const loader = (async ({ request, context }) => {
 		})
 	}
 
-	const debugInfo = await context.env.FEEDBACK_STORAGE.get(id)
+	const debugInfo = await context.cloudflare.env.FEEDBACK_STORAGE.get(id)
 	if (debugInfo === null) {
 		throw new Response('404: Report not found', { status: 404 })
 	}

@@ -1,4 +1,4 @@
-import { useParams } from '@remix-run/react'
+import { useParams } from 'react-router'
 import invariant from 'tiny-invariant'
 
 export function useRoomUrl() {

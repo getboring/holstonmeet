@@ -2,7 +2,6 @@ import { getCamera, getMic, getScreenshare } from 'partytracks/client'
 import { useObservable, useObservableAsValue } from 'partytracks/react'
 import { useCallback, useEffect, useState } from 'react'
 import { useLocalStorage } from 'react-use'
-import blurVideoTrack from '~/utils/blurVideoTrack'
 import { mode } from '~/utils/mode'
 import noiseSuppression from '~/utils/noiseSuppression'
 
@@ -44,9 +43,15 @@ function useNoiseSuppression() {
 function useBlurVideo() {
 	const [blurVideo, setBlurVideo] = useLocalStorage('blur-video', false)
 	useEffect(() => {
-		if (blurVideo) camera.addTransform(blurVideoTrack)
+		if (blurVideo) {
+			import('~/utils/blurVideoTrack').then(({ default: blurVideoTrack }) => {
+				camera.addTransform(blurVideoTrack)
+			})
+		}
 		return () => {
-			camera.removeTransform(blurVideoTrack)
+			import('~/utils/blurVideoTrack').then(({ default: blurVideoTrack }) => {
+				camera.removeTransform(blurVideoTrack)
+			})
 		}
 	}, [blurVideo])
 

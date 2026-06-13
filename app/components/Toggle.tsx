@@ -25,7 +25,7 @@ export const Toggle: FC<RadixSwitch.SwitchProps> = ({ className, ...rest }) => (
 				'h-5',
 				'bg-white',
 				'rounded-full',
-				'shadow-sm',
+				'shadow-xs',
 				'transition-transform duration-200',
 				'translate-x-[2px]',
 				'data-[state=checked]:translate-x-[22px]'

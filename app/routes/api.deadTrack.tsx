@@ -1,5 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
+import type { ActionFunctionArgs } from 'react-router'
 import type { ChatCard } from '~/types/GoogleChatApi'
 import { RELEASE } from '~/utils/constants'
 import { dashboardLogsLink } from '~/utils/dashboardLogsLink'
@@ -14,7 +13,7 @@ export type DeadTrackInfo = {
 }
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
-	if (!context.env.FEEDBACK_URL || !context.env.FEEDBACK_QUEUE) {
+	if (!context.cloudflare.env.FEEDBACK_URL || !context.cloudflare.env.FEEDBACK_QUEUE) {
 		throw new Response('not found', { status: 404 })
 	}
 	const info: DeadTrackInfo = await request.json()
@@ -31,8 +30,8 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 
 	let dashboardLink = ''
 
-	if (meetingId && context.env.DASHBOARD_WORKER_URL) {
-		dashboardLink = dashboardLogsLink(context.env.DASHBOARD_WORKER_URL, [
+	if (meetingId && context.cloudflare.env.DASHBOARD_WORKER_URL) {
+		dashboardLink = dashboardLogsLink(context.cloudflare.env.DASHBOARD_WORKER_URL, [
 			{
 				id: '2',
 				key: 'meetingId',
@@ -56,7 +55,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		})
 
 		dashboardLink =
-			context.env.DASHBOARD_WORKER_URL +
+			context.cloudflare.env.DASHBOARD_WORKER_URL +
 			`/observability/logs?${dashboardLogsParams}`
 	}
 
@@ -142,9 +141,9 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		],
 	}
 
-	await context.env.FEEDBACK_QUEUE.send(chatCard)
+	await context.cloudflare.env.FEEDBACK_QUEUE.send(chatCard)
 
-	return json({
+	return ({
 		status: 'ok',
 	})
 }

@@ -1,4 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/cloudflare'
+import type { ActionFunctionArgs } from 'react-router'
 import { AnalyticsRefreshes, getDb } from 'schema'
 import { RELEASE } from '~/utils/constants'
 import { mode } from '~/utils/mode'

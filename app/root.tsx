@@ -1,24 +1,22 @@
 import {
-	json,
 	type LinksFunction,
 	type LoaderFunctionArgs,
 	type MetaFunction,
-} from '@remix-run/cloudflare'
+} from 'react-router'
 import {
 	Links,
-	LiveReload,
 	Meta,
 	Outlet,
 	Scripts,
 	ScrollRestoration,
 	useLoaderData,
-} from '@remix-run/react'
+} from 'react-router'
 import { parse } from 'cookie'
 import type { FC, ReactNode } from 'react'
 import { useRef } from 'react'
 import { useFullscreen, useToggle } from 'react-use'
 
-import tailwind from '~/styles/tailwind.css'
+import '~/styles/tailwind.css'
 import { elementNotContainedByClickTarget } from './utils/elementNotContainedByClickTarget'
 import getUsername from './utils/getUsername.server'
 import { safeRedirect } from './utils/safeReturnUrl'
@@ -40,15 +38,15 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 	const isDashboardPath = url.pathname.startsWith('/dashboard')
 
 	if (isPublicPath || isApiPath) {
-		return json({ userDirectoryUrl: context.env.USER_DIRECTORY_URL })
+		return ({ userDirectoryUrl: context.cloudflare.env.USER_DIRECTORY_URL })
 	}
 
 	// Dashboard routes handle their own auth
 	if (isDashboardPath) {
-		return json({ userDirectoryUrl: context.env.USER_DIRECTORY_URL })
+		return ({ userDirectoryUrl: context.cloudflare.env.USER_DIRECTORY_URL })
 	}
 
-	const username = await getUsername(request)
+	const username = await getUsername(request, context.cloudflare.env)
 	if (!username && url.pathname !== '/set-username') {
 		const redirectUrl = new URL(url)
 		redirectUrl.pathname = '/set-username'
@@ -56,8 +54,8 @@ export const loader = async ({ request, context }: LoaderFunctionArgs) => {
 		throw safeRedirect(redirectUrl.toString())
 	}
 
-	const defaultResponse = json({
-		userDirectoryUrl: context.env.USER_DIRECTORY_URL,
+	const defaultResponse = ({
+		userDirectoryUrl: context.cloudflare.env.USER_DIRECTORY_URL,
 	})
 
 	// we only care about verifying token freshness if request was a user
@@ -101,7 +99,6 @@ export const meta: MetaFunction = () => [
 ]
 
 export const links: LinksFunction = () => [
-	{ rel: 'stylesheet', href: tailwind },
 	{
 		rel: 'preconnect',
 		href: 'https://fonts.googleapis.com',
@@ -200,7 +197,6 @@ const Document: FC<{ children?: ReactNode }> = ({ children }) => {
 					__CLIENT_ENV__
 				</div>
 				<Scripts />
-				{process.env.NODE_ENV === 'development' && <LiveReload />}
 			</body>
 		</html>
 	)
@@ -209,7 +205,7 @@ const Document: FC<{ children?: ReactNode }> = ({ children }) => {
 export const ErrorBoundary = () => {
 	return (
 		<Document>
-			<div className="grid h-full place-items-center bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+			<div className="grid h-full place-items-center bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 				<div className="text-center space-y-3">
 					<p className="text-xl font-semibold text-zinc-900 dark:text-white">
 						Something went wrong

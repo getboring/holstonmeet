@@ -24,4 +24,5 @@ export type Env = {
 	OPENAI_MODEL_ID?: string
 	DASHBOARD_WORKER_URL?: string
 	SESSION_SECRET?: string
+	LEGACY_SESSION_SECRET?: string
 }

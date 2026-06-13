@@ -1,13 +1,12 @@
-import type { LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
-import { Link, Outlet, useLoaderData } from '@remix-run/react'
+import type { LoaderFunctionArgs } from 'react-router'
+import { Link, Outlet, useLoaderData } from 'react-router'
 import { requireUser, getOrg } from '~/utils/auth.server'
 import { Button } from '~/components/Button'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const user = await requireUser(request, context.env)
-	const org = await getOrg(request, context.env)
-	return json({ user, org })
+	const user = await requireUser(request, context.cloudflare.env)
+	const org = await getOrg(request, context.cloudflare.env)
+	return ({ user, org })
 }
 
 export default function DashboardLayout() {

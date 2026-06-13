@@ -1,6 +1,6 @@
-import type { ActionFunction, LoaderFunctionArgs } from '@remix-run/cloudflare'
-import { json, redirect } from '@remix-run/cloudflare'
-import { Form, useLoaderData, useNavigate } from '@remix-run/react'
+import { redirect } from 'react-router'
+import type { ActionFunction, LoaderFunctionArgs } from 'react-router'
+import { Form, useLoaderData, useNavigate } from 'react-router'
 import { nanoid } from 'nanoid'
 import invariant from 'tiny-invariant'
 import { Button, ButtonLink } from '~/components/Button'
@@ -12,11 +12,11 @@ import { ACCESS_AUTHENTICATED_USER_EMAIL_HEADER } from '~/utils/constants'
 import getUsername from '~/utils/getUsername.server'
 
 export const loader = async ({ request, context }: LoaderFunctionArgs) => {
-	const directoryUrl = context.env.USER_DIRECTORY_URL
-	const username = await getUsername(request)
+	const directoryUrl = context.cloudflare.env.USER_DIRECTORY_URL
+	const username = await getUsername(request, context.cloudflare.env)
 	invariant(username)
 	const usedAccess = request.headers.has(ACCESS_AUTHENTICATED_USER_EMAIL_HEADER)
-	return json({ username, usedAccess, directoryUrl })
+	return ({ username, usedAccess, directoryUrl })
 }
 
 export const action: ActionFunction = async ({ request }) => {
@@ -31,7 +31,7 @@ export default function Index() {
 	const data = useUserMetadata(username)
 
 	return (
-		<div className="flex flex-col items-center justify-center h-full p-4 mx-auto bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+		<div className="flex flex-col items-center justify-center h-full p-4 mx-auto bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 			<div className="flex-1"></div>
 			<div className="space-y-6 sm:min-w-96">
 				<div className="text-center">

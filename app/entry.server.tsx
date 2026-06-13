@@ -1,5 +1,5 @@
-import type { EntryContext } from '@remix-run/cloudflare'
-import { RemixServer } from '@remix-run/react'
+import type { EntryContext } from 'react-router'
+import { ServerRouter } from 'react-router'
 import { renderToString } from 'react-dom/server'
 import { RELEASE, SENTRY_DSN } from './utils/constants'
 
@@ -38,7 +38,7 @@ export default function handleRequest(
 
 	try {
 		let markup = renderToString(
-			<RemixServer context={remixContext} url={request.url} />
+			<ServerRouter context={remixContext} url={request.url} />
 		).replace(
 			'__CLIENT_ENV__',
 			`

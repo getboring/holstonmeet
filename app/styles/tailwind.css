@@ -1,7 +1,39 @@
-/* app/tailwind.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+	--font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+	--animate-fade-in: fadeIn 0.5s ease 0.5s forwards;
+	--animate-slide-down-and-fade: slideDownAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+	--animate-slide-left-and-fade: slideLeftAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+	--animate-slide-up-and-fade: slideUpAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+	--animate-slide-right-and-fade: slideRightAndFade 400ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+	from { opacity: 0; }
+	to { opacity: 1; }
+}
+
+@keyframes slideDownAndFade {
+	from { opacity: 0; transform: translateY(-2px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideLeftAndFade {
+	from { opacity: 0; transform: translateX(2px); }
+	to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideUpAndFade {
+	from { opacity: 0; transform: translateY(2px); }
+	to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideRightAndFade {
+	from { opacity: 0; transform: translateX(2px); }
+	to { opacity: 1; transform: translateX(0); }
+}
 
 @layer base {
 	html:focus-within {
@@ -29,69 +61,63 @@
 
 	* {
 		outline-offset: 0.25rem;
-		outline-color: theme('colors.indigo[500]');
+		outline-color: var(--color-indigo-500);
 	}
 }
 
-@layer utilities {
-	.indication-shadow {
-		filter: drop-shadow(0 0 2px theme('colors.zinc[800]'))
-			drop-shadow(0 0 4px theme('colors.zinc[800]'));
-	}
+@utility indication-shadow {
+	filter: drop-shadow(0 0 2px var(--color-zinc-800))
+		drop-shadow(0 0 4px var(--color-zinc-800));
+}
 
-	.indigo-glow-text {
-		text-shadow:
-			0px 0px 2px theme('colors.indigo[300]'),
-			0px 0px 4px theme('colors.indigo[300]'),
-			0px 0px 8px theme('colors.indigo[300]'),
-			0px 0px 12px theme('colors.indigo[300]'),
-			0px 0px 16px theme('colors.indigo[300]'),
-			0px 0px 24px theme('colors.indigo[300]'),
-			0px 0px 32px theme('colors.indigo[300]');
-	}
+@utility indigo-glow-text {
+	text-shadow:
+		0px 0px 2px var(--color-indigo-300),
+		0px 0px 4px var(--color-indigo-300),
+		0px 0px 8px var(--color-indigo-300),
+		0px 0px 12px var(--color-indigo-300),
+		0px 0px 16px var(--color-indigo-300),
+		0px 0px 24px var(--color-indigo-300),
+		0px 0px 32px var(--color-indigo-300);
+}
 
-	.indigo-glow-box {
-		box-shadow:
-			0px 0px 2px theme('colors.indigo[300]'),
-			0px 0px 4px theme('colors.indigo[300]'),
-			0px 0px 8px theme('colors.indigo[300]'),
-			0px 0px 12px theme('colors.indigo[300]'),
-			0px 0px 16px theme('colors.indigo[300]'),
-			0px 0px 24px theme('colors.indigo[300]'),
-			0px 0px 32px theme('colors.indigo[300]'),
-			0px 0px 64px theme('colors.indigo[300]'),
-			0px 0px 128px theme('colors.indigo[300]');
-	}
+@utility indigo-glow-box {
+	box-shadow:
+		0px 0px 2px var(--color-indigo-300),
+		0px 0px 4px var(--color-indigo-300),
+		0px 0px 8px var(--color-indigo-300),
+		0px 0px 12px var(--color-indigo-300),
+		0px 0px 16px var(--color-indigo-300),
+		0px 0px 24px var(--color-indigo-300),
+		0px 0px 32px var(--color-indigo-300),
+		0px 0px 64px var(--color-indigo-300),
+		0px 0px 128px var(--color-indigo-300);
+}
 
-	.text-shadow {
-		text-shadow:
-			0 0 2px theme('colors.zinc[900]'),
-			0 0 4px theme('colors.zinc[900]'),
-			0 0 8px theme('colors.zinc[900]');
-	}
+@utility text-shadow {
+	text-shadow:
+		0 0 2px var(--color-zinc-900),
+		0 0 4px var(--color-zinc-900),
+		0 0 8px var(--color-zinc-900);
+}
 
-	.hover-fade {
-		transition: opacity 0.15s ease-in-out;
-	}
+@utility hover-fade {
+	transition: opacity 0.15s ease-in-out;
 
-	.hover-fade.inactive:not(:focus-within) {
+	&.inactive:not(:focus-within) {
 		opacity: 0;
 		cursor: none !important;
 	}
 
 	@supports (selector(:has(*))) {
-		.hover-fade:has(:focus-visible) {
+		&:has(:focus-visible) {
 			opacity: 1;
 			cursor: auto;
 		}
 	}
 
-	/* 
-		Firefox doesn't support :has yet, so we will
-		provide a less ideal fallback using :focus-within
-		 */
 	@supports not (selector(:has(*))) {
-		.hover-fade:focus-within {
+		&:focus-within {
 			opacity: 1;
 			cursor: auto;
 		}

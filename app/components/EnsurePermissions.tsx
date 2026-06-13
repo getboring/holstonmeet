@@ -39,7 +39,7 @@ export function EnsurePermissions(props: EnsurePermissionsProps) {
 
 	if (permissionState === 'denied') {
 		return (
-			<div className="grid items-center h-full bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+			<div className="grid items-center h-full bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 				<div className="mx-auto space-y-3 max-w-80 text-center">
 					<h1 className="text-2xl font-bold text-zinc-900 dark:text-white">
 						Permission denied
@@ -55,7 +55,7 @@ export function EnsurePermissions(props: EnsurePermissionsProps) {
 
 	if (permissionState === 'prompt') {
 		return (
-			<div className="grid items-center h-full bg-gradient-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
+			<div className="grid items-center h-full bg-linear-to-br from-indigo-50 via-white to-violet-50 dark:from-zinc-950 dark:via-zinc-900 dark:to-indigo-950">
 				<div className="mx-auto max-w-80 text-center space-y-6">
 					<div className="space-y-2">
 						<h2 className="text-xl font-semibold text-zinc-900 dark:text-white">

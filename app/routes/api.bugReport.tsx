@@ -1,5 +1,4 @@
-import type { ActionFunctionArgs } from '@remix-run/cloudflare'
-import { json } from '@remix-run/cloudflare'
+import type { ActionFunctionArgs } from 'react-router'
 import invariant from 'tiny-invariant'
 import type { RoomHistory } from '~/hooks/useRoomHistory'
 import type { ChatCard } from '~/types/GoogleChatApi'
@@ -15,9 +14,9 @@ export type BugReportInfo = {
 
 export const action = async ({ request, context }: ActionFunctionArgs) => {
 	if (
-		!context.env.FEEDBACK_URL ||
-		!context.env.FEEDBACK_STORAGE ||
-		!context.env.FEEDBACK_QUEUE
+		!context.cloudflare.env.FEEDBACK_URL ||
+		!context.cloudflare.env.FEEDBACK_STORAGE ||
+		!context.cloudflare.env.FEEDBACK_QUEUE
 	) {
 		throw new Response('not found', { status: 404 })
 	}
@@ -27,7 +26,7 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	try {
 		info = JSON.parse(String(formData.get('info') ?? '{}'))
 	} catch {
-		return json({ error: 'Invalid info payload' }, { status: 400 })
+		return Response.json({ error: 'Invalid info payload' }, { status: 400 })
 	}
 	const { identity, roomName, roomHistory, url } = info
 	const description = formData.get('description')
@@ -38,8 +37,8 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 	invariant(url)
 
 	const debugInfoId = crypto.randomUUID()
-	if (context.env.FEEDBACK_STORAGE) {
-		await context.env.FEEDBACK_STORAGE.put(
+	if (context.cloudflare.env.FEEDBACK_STORAGE) {
+		await context.cloudflare.env.FEEDBACK_STORAGE.put(
 			debugInfoId,
 			JSON.stringify(roomHistory, null, 2)
 		)
@@ -131,9 +130,9 @@ export const action = async ({ request, context }: ActionFunctionArgs) => {
 		],
 	}
 
-	await context.env.FEEDBACK_QUEUE.send(chatCard)
+	await context.cloudflare.env.FEEDBACK_QUEUE.send(chatCard)
 
-	return json({
+	return Response.json({
 		status: 'ok',
 	})
 }

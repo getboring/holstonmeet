@@ -1,4 +1,4 @@
-import { redirect, type LoaderFunctionArgs } from '@remix-run/cloudflare'
+import { redirect, type LoaderFunctionArgs } from 'react-router'
 import { nanoid } from 'nanoid'
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {

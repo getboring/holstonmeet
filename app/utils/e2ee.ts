@@ -270,7 +270,7 @@ export class EncryptionWorker {
 const FLAG_TYPED_ARRAY = 'FLAG_TYPED_ARRAY'
 const FLAG_ARRAY_BUFFER = 'FLAG_ARRAY_BUFFER'
 
-function replacer(_key: string, value: any) {
+function replacer(_key: string, value: unknown) {
 	if (value instanceof Uint8Array) {
 		return { [FLAG_TYPED_ARRAY]: true, data: Array.from(value) }
 	}
@@ -283,12 +283,13 @@ function replacer(_key: string, value: any) {
 	return value
 }
 
-function reviver(_key: string, value: any) {
-	if (value && value[FLAG_TYPED_ARRAY]) {
-		return Uint8Array.from(value.data)
+function reviver(_key: string, value: unknown) {
+	const obj = value as Record<string, unknown> | undefined
+	if (obj && obj[FLAG_TYPED_ARRAY]) {
+		return Uint8Array.from(obj.data as number[])
 	}
-	if (value && value[FLAG_ARRAY_BUFFER]) {
-		return new Uint8Array(value.data).buffer
+	if (obj && obj[FLAG_ARRAY_BUFFER]) {
+		return new Uint8Array(obj.data as number[]).buffer
 	}
 	return value
 }
@@ -409,8 +410,8 @@ export function useE2EE({
 	}
 }
 
-function arrayBufferToDecimal(buffer: ArrayBuffer) {
-	const byteArray = new Uint8Array(buffer) // Create a typed array from the ArrayBuffer
+function arrayBufferToDecimal(buffer: ArrayBuffer | Uint8Array) {
+	const byteArray = buffer instanceof Uint8Array ? buffer : new Uint8Array(buffer)
 	const hexArray = Array.from(byteArray, (byte) => {
 		return byte.toString(10).padStart(2, '0') // Convert each byte to a 2-digit hex string
 	})

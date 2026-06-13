@@ -1,0 +1,29 @@
+version: 2
+updates:
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+    groups:
+      radix-ui:
+        patterns:
+          - "@radix-ui/*"
+      drizzle:
+        patterns:
+          - "drizzle-*"
+      react-router:
+        patterns:
+          - "@react-router/*"
+          - "react-router"
+      cloudflare:
+        patterns:
+          - "@cloudflare/*"
+          - "wrangler"
+    ignore:
+      - dependency-name: "tailwindcss"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "wrangler"
+        update-types: ["version-update:semver-major"]

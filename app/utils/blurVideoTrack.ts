@@ -1,22 +1,31 @@
-import '@mediapipe/selfie_segmentation'
-import * as bodySegmentation from '@tensorflow-models/body-segmentation'
-import '@tensorflow/tfjs-backend-webgl'
 import { Observable } from 'rxjs'
 
-let loadedSegmenter: null | bodySegmentation.BodySegmenter = null
-const loadSegmenter = async () => {
-	if (loadedSegmenter !== null) return loadedSegmenter
-	loadedSegmenter = await bodySegmentation.createSegmenter(
-		bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation,
-		{
-			runtime: 'mediapipe',
-			modelType: 'general',
-			solutionPath:
-				'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
-		}
-	)
+// This module dynamically imports @tensorflow-models/body-segmentation
+// and @mediapipe/selfie_segmentation to avoid ESM compatibility issues at build time.
+// The mediapipe package has a broken ESM export (SelfieSegmentation is not exported).
 
-	return loadedSegmenter
+let _segmenterPromise: Promise<any> | null = null
+
+async function ensureSegmenter() {
+	if (_segmenterPromise) return _segmenterPromise
+	_segmenterPromise = (async () => {
+		const bodySegmentation = await import(
+			'@tensorflow-models/body-segmentation'
+		)
+		await import('@tensorflow/tfjs-backend-webgl')
+
+		const segmenter = await bodySegmentation.createSegmenter(
+			bodySegmentation.SupportedModels.MediaPipeSelfieSegmentation as any,
+			{
+				runtime: 'mediapipe',
+				modelType: 'general',
+				solutionPath:
+					'https://cdn.jsdelivr.net/npm/@mediapipe/selfie_segmentation',
+			} as any
+		)
+		return { bodySegmentation, segmenter }
+	})()
+	return _segmenterPromise
 }
 
 export default function blurVideoTrack(
@@ -24,7 +33,7 @@ export default function blurVideoTrack(
 ): Observable<MediaStreamTrack> {
 	return new Observable((subscriber) => {
 		;(async () => {
-			const segmenter = await loadSegmenter()
+			const { bodySegmentation, segmenter } = await ensureSegmenter()
 
 			const { height: h = 0, width: w = 0 } =
 				originalVideoStreamTrack.getSettings()
@@ -32,9 +41,7 @@ export default function blurVideoTrack(
 			const video = document.createElement('video')
 			video.height = h
 			video.width = w
-			// needed for iOS Safari to allow playing
 			video.muted = true
-			// needed for iOS Safari to allow playing
 			video.setAttribute('playsinline', '')
 			const loaded = new Promise((res) =>
 				video.addEventListener('loadedmetadata', res, { once: true })
@@ -46,7 +53,6 @@ export default function blurVideoTrack(
 			await loaded
 
 			const canvas = document.createElement('canvas')
-			// we need to create a context in order for this to work with firefox
 			const _contex = canvas.getContext('2d')
 
 			canvas.height = h
@@ -75,16 +81,14 @@ export default function blurVideoTrack(
 			let t = -1
 			async function tick() {
 				await drawBlur()
-				t = window.setTimeout(tick, 1000 / 30) // 30fps
+				t = window.setTimeout(tick, 1000 / 30)
 			}
 
 			await drawBlur()
 			tick()
 
-			// if the device generating this stream is disconnected, we should stop
 			originalVideoStreamTrack.addEventListener('ended', (e) => {
 				blurredTrack.stop()
-				// proxy ended event to blurredTrack
 				blurredTrack.dispatchEvent(e)
 			})
 

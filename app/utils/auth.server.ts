@@ -1,14 +1,20 @@
-import { createCookieSessionStorage, redirect } from '@remix-run/cloudflare'
+import { createCookieSessionStorage, redirect } from 'react-router'
 import { eq } from 'drizzle-orm'
 import { Users, Organizations, getDb } from 'schema'
 import type { Env } from '~/types/Env'
+import { mode } from './mode'
 import { type Result, ok, err, ErrorCodes } from './result'
 
 function getStorage(env: Env) {
 	const secret = env.SESSION_SECRET
 	if (!secret) {
-		console.error(
-			'FATAL: SESSION_SECRET env var is not set. Sessions will be insecure.'
+		if (mode === 'production') {
+			throw new Error(
+				'FATAL: SESSION_SECRET env var is required in production. Set it via `wrangler secret put SESSION_SECRET`.'
+			)
+		}
+		console.warn(
+			'WARNING: SESSION_SECRET env var is not set. Using ephemeral secret. Sessions will not persist across restarts.'
 		)
 	}
 	return createCookieSessionStorage({

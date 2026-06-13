@@ -2,7 +2,7 @@
 	"name": "@holston-platforms/holstonmeet",
 	"type": "module",
 	"scripts": {
-		"build": "react-router build",
+		"build": "react-router build && node scripts/patch-server-build.mjs",
 		"build:e2ee-worker": "./rust-mls-worker/build.sh",
 		"lint": "biome check .",
 		"lint:fix": "biome check --write .",
@@ -78,6 +78,7 @@
 		"@playwright/test": "^1.46.1",
 		"@react-router/dev": "^7.17.0",
 		"@tailwindcss/vite": "^4.3.0",
+		"@types/better-sqlite3": "^7.6.13",
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"better-sqlite3": "^11.3.0",

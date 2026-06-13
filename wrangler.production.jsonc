@@ -52,7 +52,7 @@
 		{
 			"binding": "DB",
 			"database_name": "holstonmeet-db-production",
-			"database_id": "YOUR_PROD_DB_ID",
+			"database_id": "b90f95aa-f13a-4fcc-b562-4e9c8db4a8d6",
 			"migrations_dir": "migrations",
 			"migrations_pattern": "migrations/*/migration.sql"
 		}

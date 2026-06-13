@@ -1,18 +1,31 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
 	"name": "holstonmeet",
+	"account_id": "94bdc287cd4e0622b68f9e18e406ae66",
 	"compatibility_date": "2026-06-12",
+	"compatibility_flags": ["nodejs_compat_v2"],
 	"main": "./workers/app.ts",
-	"compatibility_flags": ["nodejs_compat"],
+
+	"alias": {
+		"virtual:react-router/server-build": "./build/server/index.js"
+	},
 
 	"assets": {
-		"directory": "./public",
+		"directory": "./build/client",
 		"binding": "ASSETS"
 	},
 
 	"vars": {
 		"CALLS_APP_ID": "YOUR_CALLS_SFU_APP_ID_HERE"
 	},
+
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "holstonmeet-db-production",
+			"database_id": "b90f95aa-f13a-4fcc-b562-4e9c8db4a8d6"
+		}
+	],
 
 	"durable_objects": {
 		"bindings": [
@@ -27,10 +40,6 @@
 		{
 			"tag": "v1",
 			"new_classes": ["ChatRoom"]
-		},
-		{
-			"tag": "v2",
-			"deleted_classes": ["RateLimiter"]
 		}
 	]
 }

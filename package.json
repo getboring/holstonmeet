@@ -74,7 +74,7 @@
 		"@biomejs/biome": "1.9.4",
 		"@cloudflare/vitest-pool-workers": "^0.4.19",
 		"@cloudflare/workers-types": "^4.20240806.0",
-		"@peculiar/webcrypto": "^1.5.0",
+		"@peculiar/webcrypto": "^1.7.1",
 		"@playwright/test": "^1.46.1",
 		"@react-router/dev": "^7.17.0",
 		"@tailwindcss/vite": "^4.3.0",

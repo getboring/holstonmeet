@@ -82,7 +82,7 @@
 		"@types/react": "^18.3.3",
 		"@types/react-dom": "^18.3.0",
 		"better-sqlite3": "^11.3.0",
-		"del-cli": "^5.1.0",
+		"del-cli": "^7.0.0",
 		"drizzle-kit": "^0.31.10",
 		"git-format-staged": "^3.1.1",
 		"glob": "^13.0.6",

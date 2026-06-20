@@ -32,7 +32,7 @@
 		"seed": "tsx seed.ts"
 	},
 	"dependencies": {
-		"@cloudflare/vite-plugin": "^1.40.2",
+		"@cloudflare/vite-plugin": "^1.42.1",
 		"@heroicons/react": "^2.1.5",
 		"@mediapipe/selfie_segmentation": "^0.1.1675465747",
 		"@radix-ui/react-alert-dialog": "^1.1.1",
@@ -72,7 +72,7 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@cloudflare/vitest-pool-workers": "^0.4.19",
+		"@cloudflare/vitest-pool-workers": "^0.16.18",
 		"@cloudflare/workers-types": "^4.20240806.0",
 		"@peculiar/webcrypto": "^1.5.0",
 		"@playwright/test": "^1.46.1",
